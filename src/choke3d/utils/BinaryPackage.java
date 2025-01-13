@@ -1,5 +1,7 @@
 package choke3d.utils;
 
+import choke3d.math.Quat;
+import choke3d.math.Vec3f;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -9,7 +11,7 @@ import java.util.Map;
  *
  * @author tocatoca
  */
-public class BinaryPackage {
+public class BinaryPackage { 
     public BinaryFormat format = new BinaryFormat();
     public BinaryPackage(BinaryFormat format) {
         this.format=format;
@@ -49,6 +51,12 @@ public class BinaryPackage {
     public byte[] getBytes(String field) {
         return (byte[]) getValue(field);
     }  
+    public Vec3f getVec3f(String field) {
+        return (Vec3f) getValue(field);
+    }
+    public Quat getQuat(String field) {
+        return (Quat) getValue(field);
+    }
     // FIELD NAME, FIELD VALUE in order
     public LinkedHashMap<String, Object> values = new LinkedHashMap<>();
     public void put(String key,Object value) {
@@ -83,6 +91,16 @@ public class BinaryPackage {
                     
                     bufferSize += Integer.BYTES; // Size of the length field
                     bufferSize += str.getBytes(StandardCharsets.UTF_8).length; // Size of string bytes
+                    break;
+                case "binary": 
+                    bufferSize += Integer.BYTES; // Size of the length field
+                    bufferSize += ((byte[]) values.get(entry.getKey())).length; // Size of string bytes
+                    break;
+                case "vec3f":
+                    bufferSize += Float.SIZE*3;
+                    break;
+                case "quat":
+                    bufferSize += Float.SIZE*4;
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported field type: " + entry.getValue());
@@ -141,6 +159,19 @@ public class BinaryPackage {
                     buff.putInt(binData.length); // Write string length
                     buff.put(binData); // Write string bytes
                     break;
+                case "vec3f":
+                    Vec3f vec=(Vec3f) value;
+                    buff.putFloat(vec.x);
+                    buff.putFloat(vec.y);
+                    buff.putFloat(vec.z);
+                    break;
+                case "quat":
+                    Quat q=(Quat) value;
+                    buff.putFloat(q.w);
+                    buff.putFloat(q.x);
+                    buff.putFloat(q.y);
+                    buff.putFloat(q.z);
+                    break;
                 default:
                     throw new IllegalArgumentException("Unsupported field type: " + fieldType);
             }
@@ -151,6 +182,12 @@ public class BinaryPackage {
     }
     public ByteBuffer pack() {
         return encode();
+    }
+    public byte[] packBytes() {
+        ByteBuffer buffer=pack();
+        byte[] result = new byte[buffer.limit()];
+        System.arraycopy(buffer.array(), 0, result, 0, buffer.limit());
+        return result;
     }
     public void serialize() {
         
@@ -212,6 +249,16 @@ public class BinaryPackage {
                         byte[] binData = new byte[binLength];
                         buff.get(binData); // Read binary bytes
                         values.put(fieldName, binData);
+                        break;
+                case "vec3f":
+                        values.put(fieldName, 
+                                new Vec3f(buff.getFloat(),buff.getFloat(),buff.getFloat())
+                        );
+                        break;
+                case "quat":
+                        values.put(fieldName, 
+                                new Quat(buff.getFloat(),buff.getFloat(),buff.getFloat(),buff.getFloat())
+                        );
                         break;
                 default:
                     throw new IllegalArgumentException("Unsupported field type: " + fieldType);

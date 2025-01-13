@@ -93,8 +93,10 @@ public class LoginFrame extends JFrame {
             
             // Aqui você pode adicionar o código para conectar ao servidor com o nick e senha
             System.out.println("Tentando login com o IP: " + ip + " e Nick: " + nick);
-            if(client.connect(nick, ip, 25532)) {
+            if(client.packetHandler.connect(nick, ip, 25532)) {
                 JOptionPane.showMessageDialog(this,"Conectado!");
+                setVisible(false);
+                client.run();
             } else {
                 JOptionPane.showMessageDialog(this, "Erro ao conectar!", "ERRO", JOptionPane.ERROR_MESSAGE);
             }

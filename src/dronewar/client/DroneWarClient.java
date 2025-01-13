@@ -1,57 +1,20 @@
 package dronewar.client;
 
 import choke3d.engine.App;
-import choke3d.utils.BinaryPackage;
-import dronewar.server.protocol.Protocol;
-import dronewar.server.protocol.LoginData;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-
+import choke3d.engine.FPSCamera; 
+import dronewar.server.game.Drone; 
+import dronewar.server.protocol.GeneralUpdateData; 
 /**
  *
  * @author tocatoca
  */
 public class DroneWarClient extends App {
-    GameMap map=new GameMap();
-    HashMap<String,Drone> drones=new HashMap<>();
+    GameMap map=new GameMap(); 
     
-    DatagramSocket socket = null;
+    GeneralUpdateData last_update=new GeneralUpdateData(); 
     
-    public boolean connect(String name,String ip,int port) {
-        try {
-            // Criação do socket UDP
-            if (socket==null) socket = new DatagramSocket();
-            // Endereço e porta do servidor
-            InetAddress address = InetAddress.getByName(ip); 
-            
-            socket.connect(address, port);
-            
-            LoginData loginData = new LoginData(); 
-            loginData.name=name;
-             
-            // Criação do pacote UDP 
-            // Enviar o pacote
-            socket.send(
-                    Protocol.preparePacket(loginData, Protocol.LOGIN_REQUEST, address, port)
-            );
-            System.out.println("Pacote enviado para o servidor " );
-            byte[] responseBytes = new byte[1024]; 
-            // Cria o socket para receber pacotes
-            DatagramPacket responsePacket = new DatagramPacket(responseBytes, responseBytes.length);
-            
-            socket.receive(responsePacket);
-            System.out.println("Resposta recebida do servidor " );
-            
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getLocalizedMessage());
-            return false;
-        }  
-    }
+    ClientPacketHandler packetHandler=new ClientPacketHandler(this);
+    
     
     @Override
     public void update() {
@@ -63,23 +26,24 @@ public class DroneWarClient extends App {
     
     void draw() { 
         map.draw();  
-        for(String id : drones.keySet()) {
-            drones.get(id).draw();
+        synchronized(last_update.drones) {
+        for(Drone d : last_update.drones) {
+            Drawer.draw_drone(d);
+        }
         }
     }
     public void run() {
         init();  
-        camera=new DroneCamera();
+        camera=new FPSCamera();
         camera.setup3D(60); 
-        map.init();
-        Drone drone=new Drone();
-        ((DroneCamera)camera).target=drone;
-        drones.put("1",drone);
+        map.init(); 
+        //((DroneCamera)camera).target=drone; 
         while(running) {
            update(); 
            draw();
         }
         destroy();
+        packetHandler.socket.close();
     }
     public static void main(String args[]) {
         (new DroneWarClient()).run();

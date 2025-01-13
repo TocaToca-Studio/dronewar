@@ -10,11 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author tocatoca
  */
 public class Room {   
-    ConcurrentHashMap<String,Integer> connections=new ConcurrentHashMap<>();
-    ConcurrentHashMap<Integer,Player> players=new ConcurrentHashMap<>();
-    ConcurrentHashMap<Integer,Drone> drones=new ConcurrentHashMap<>(); 
-    ArrayList<Bullet> bullets=new ArrayList<>();
-    Safezone safezone=new Safezone();
+    public ConcurrentHashMap<String,Integer> connections=new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer,Player> players=new ConcurrentHashMap<>();
+    
+    public ConcurrentHashMap<Integer,Drone> drones=new ConcurrentHashMap<>(); 
+    public ArrayList<Bullet> bullets=new ArrayList<>();
+    public Safezone safezone=new Safezone();
     
     public boolean is_registered(String connection) {
         return connections.containsKey(connection);
@@ -26,8 +27,7 @@ public class Room {
             return id;
         } 
         int id=connections.size()+1;
-        Player new_player=new Player();
-        new_player.connection=connection;
+        Player new_player=new Player(); 
         new_player.id=id;
         new_player.name=name;
         connections.put(connection,id);
@@ -42,7 +42,7 @@ public class Room {
     }
     public void update(float delta) {
         HashMap<Bullet,Drone> hits=new HashMap<>();
-        
+        safezone.radius-=delta;
         for(Drone drone : drones.values()) {
             drone.update(delta);
             

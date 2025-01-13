@@ -12,7 +12,7 @@ import org.lwjgl.input.Mouse;
  */
 public class DroneCamera extends Camera {
     public float velocity=10;  
-    public Drone target=null;
+    public Drawer target=null;
     Vec3f position=new Vec3f(0,0,0);
     public Vec2f angles=new Vec2f(0,0);
     float zoffset=2;

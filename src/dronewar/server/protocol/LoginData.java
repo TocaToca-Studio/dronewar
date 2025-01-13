@@ -8,21 +8,17 @@ import choke3d.utils.BinaryPackage;
  * @author tocatoca
  */
 public class LoginData extends BinaryPackage {
-    public String name="";
-    public int score=0;
+    public String name=""; 
     public LoginData() {
         super();  
-        putField("name","string"); 
-        putField("score","int");  
+        putField("name","string");  
     }
     @Override
     public void serialize() {
-        putValue("name", name); 
-        putValue("score", score); 
+        putValue("name", name);  
     }
     @Override
     public void unserialize() {
-        name=getString("name");
-        score=getInt("score");
+        name=getString("name"); 
     }
 }

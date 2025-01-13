@@ -1,6 +1,7 @@
 package choke3d.math;
 
 import static choke3d.math.MathUtils.LERP;
+import java.nio.ByteBuffer;
 
 /**
  *
@@ -199,5 +200,14 @@ public class Vec3f {
         float u = 1.0f - v - w;
 
         return new Vec3f(u, v, w);
+    }
+    public ByteBuffer pack() {
+        ByteBuffer ret=ByteBuffer.allocate(Float.SIZE*3);
+        ret.putFloat(x); ret.putFloat(y);  ret.putFloat(z);
+        ret.flip();
+        return ret;
+    }
+    public static Vec3f unpack(ByteBuffer buff) {
+        return new Vec3f(buff.getFloat(),buff.getFloat(),buff.getFloat());
     }
 }

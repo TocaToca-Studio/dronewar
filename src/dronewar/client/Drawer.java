@@ -3,6 +3,7 @@ package dronewar.client;
 import choke3d.math.Quat;
 import choke3d.math.Vec3f;
 import choke3d.math.Vec4f;
+import dronewar.server.game.Drone;
 import org.lwjgl.opengl.GL11;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -10,16 +11,13 @@ import static org.lwjgl.opengl.GL11.*;
  *
  * @author tocatoca
  */
-public class Drone {
-    Quat rotation=new Quat();
-    Vec3f position=new Vec3f();
+public class Drawer { 
     
-    Drone() {
-        rotation=new Quat();
+    
+    public static void draw_drone(Drone drone) { 
+        Quat rotation=new Quat();
+        Vec3f position=drone.getPosition();
         rotation.rotate((float) Math.toRadians(90), Vec3f.LEFT());
-    }
-    
-    void draw() { 
         glPushMatrix();
         Vec4f angles=rotation.to_angles();
         glTranslatef(position.x,position.y,position.z);
