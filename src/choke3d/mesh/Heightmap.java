@@ -1,5 +1,6 @@
-package choke3d.engine;
+package choke3d.mesh;
  
+import choke3d.gl.Texture;
 import java.awt.image.BufferedImage;
 import static org.lwjgl.opengl.GL11.*; 
 import choke3d.math.Vec3f;

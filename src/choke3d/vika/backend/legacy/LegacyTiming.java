@@ -1,4 +1,4 @@
-package choke3d.engine;
+package choke3d.vika.backend.legacy;
 
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard;
  *
  * @author tocatoca
  */
-public class Timing {
+public class LegacyTiming {
     /** time at last frame */
     public long last_frame;
      
@@ -16,7 +16,7 @@ public class Timing {
     /** last fps time */
     public long time;
     public long lastFPS;
-    public float delta;
+    public double delta;
     /**
      * Get the accurate system time
      * 
@@ -25,15 +25,15 @@ public class Timing {
     public long getTime() {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
-    public float getDelta() { 
+    public double getDelta() { 
         return delta;
     }
     public void init() { 
         last_frame=getTime();
     }
-    public float update(){   
+    public double update(){   
         time=getTime();
-        delta =  (float)(time - last_frame) / 1000.0f;
+        delta =  (time - last_frame) / 1000.0f;
         last_frame = time; 
         return delta; 
     }

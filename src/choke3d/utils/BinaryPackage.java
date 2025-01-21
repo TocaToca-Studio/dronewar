@@ -2,9 +2,13 @@ package choke3d.utils;
 
 import choke3d.math.Quat;
 import choke3d.math.Vec3f;
+import dronewar.server.game.Drone;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,6 +20,24 @@ public class BinaryPackage {
     public BinaryPackage(BinaryFormat format) {
         this.format=format;
     } 
+    public static byte[] packList(List<? extends BinaryPackage> list) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        for (BinaryPackage d : list) outputStream.write(d.packBytes());  
+        return outputStream.toByteArray();     
+    } 
+    public static <T extends BinaryPackage> void unpackToList(List<T> list, byte[] buffer, Class<T> clazz) {
+    ByteBuffer buff = ByteBuffer.wrap(buffer); 
+    while (buff.remaining() > 0) {
+        try {
+            // Cria uma nova instância do tipo genérico
+            T instance = clazz.getDeclaredConstructor().newInstance();
+            instance.unpack(buff);
+            list.add(instance);
+        } catch (Exception e) {
+            throw new RuntimeException("Falha ao instanciar o tipo: " + clazz.getName(), e);
+        }
+    }
+}
     public BinaryPackage() {
         
     }
@@ -101,6 +123,9 @@ public class BinaryPackage {
                     break;
                 case "quat":
                     bufferSize += Float.SIZE*4;
+                    break;
+                case "boolean":
+                    bufferSize += Byte.SIZE;
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported field type: " + entry.getValue());

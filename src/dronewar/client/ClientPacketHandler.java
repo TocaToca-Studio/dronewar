@@ -2,6 +2,7 @@ package dronewar.client;
 
 import choke3d.utils.BinaryPackage;
 import choke3d.utils.ChecksumUtil;
+import choke3d.utils.UDPCompression;
 import dronewar.server.Server;
 import dronewar.server.protocol.ErrorData;
 import dronewar.server.protocol.LoginData;
@@ -38,12 +39,12 @@ public class ClientPacketHandler extends Thread {
                     Protocol.preparePacket(loginData, Protocol.LOGIN_REQUEST, address, port)
             );
             System.out.println("Pacote enviado para o servidor " );
-            byte[] receiveBuffer = new byte[1024]; 
+            byte[] receiveBuffer = new byte[5000]; 
             // Cria o socket para receber pacotes
             DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
             
             socket.receive(receivePacket);
-            ByteBuffer buffer=ByteBuffer.wrap(receivePacket.getData());
+            ByteBuffer buffer=ByteBuffer.wrap(UDPCompression.decompress(receivePacket.getData()));
             int message_code=buffer.getInt();
             System.out.println("Resposta do servidor: " + message_code);
             if(message_code==Protocol.FAIL) {
@@ -51,9 +52,13 @@ public class ClientPacketHandler extends Thread {
                 error.decode(buffer);
                 System.out.println("Erro enviado pelo servidor: " + error.message);
                 
-            }
-            start();
-            return message_code==Protocol.SUCCESS;
+            } 
+            if(message_code==Protocol.LOGIN_REQUEST) { 
+                client.player.unpack(buffer); 
+                System.out.println(client.player);
+                start();
+            } 
+            return message_code==Protocol.LOGIN_REQUEST;
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getLocalizedMessage());
@@ -82,10 +87,12 @@ public class ClientPacketHandler extends Thread {
     }
     public void handle_message(ByteBuffer buffer,int message_code) { 
         try {
-            if(message_code==Protocol.GENERAL_UPDATE) {
-                client.last_update.unpack(buffer);
+            if(message_code==Protocol.GENERAL_UPDATE) { 
+                client.last_update.unpack(buffer); 
                 /*System.out.println("RAIO DA SAFE:" +
                 client.last_update.safezone.getRadius() );*/
+            }  else if(message_code==Protocol.LOGIN_REQUEST) { 
+                client.player.unpack(buffer); 
             } else if(message_code==Protocol.FAIL) {
                 System.out.println("Servidor não reconheceu pacote.");
             }  else {
@@ -99,22 +106,26 @@ public class ClientPacketHandler extends Thread {
         }
     }
     public void handle_packet(DatagramPacket packet) {
-        // Processa a mensagem recebida
-        serverAddress = packet.getAddress();
-        serverPort = packet.getPort();
-        //String connection=serverAddress + ":" + serverPort;
-        //System.out.println("Pacote recebido o servidor " + connection + " ("+packet.getLength()+" bytes)");
-        
-        ByteBuffer buffer=ByteBuffer.wrap(packet.getData());
-       /* if(!ChecksumUtil.verifyChecksum(buffer)) {
+        try {
+            // Processa a mensagem recebida
+            serverAddress = packet.getAddress();
+            serverPort = packet.getPort();
+            //String connection=serverAddress + ":" + serverPort;
+            //System.out.println("Pacote recebido o servidor " + connection + " ("+packet.getLength()+" bytes)");
+            
+            ByteBuffer buffer=ByteBuffer.wrap(UDPCompression.decompress(packet.getData()));
+            /* if(!ChecksumUtil.verifyChecksum(buffer)) {
             System.out.println("PACOTE CORROMPIDO CHECKSUM INVALIDO!");
             return;
-        }*/
-        int message_code=buffer.getInt();
-        handle_message(buffer,message_code);  
+            }*/
+            int message_code=buffer.getInt();
+            handle_message(buffer,message_code);  
+        } catch (IOException ex) {
+            Logger.getLogger(ClientPacketHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    byte[] buffer = new byte[65535];
     public void listen()  {  
-        byte[] buffer = new byte[1024];
          
         // Cria o socket para receber pacotes
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
@@ -124,7 +135,7 @@ public class ClientPacketHandler extends Thread {
         while (client.running && !isInterrupted()) {
             try {
                 // pede atualização
-                send_message(Protocol.GENERAL_UPDATE,null);
+                send_message(Protocol.GENERAL_UPDATE,client.client_control);
                 // Recebe o pacote
                 socket.receive(packet);
                 handle_packet(packet); 

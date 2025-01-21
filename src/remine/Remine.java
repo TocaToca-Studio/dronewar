@@ -5,9 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import remine.Drawer;
-import choke3d.engine.App;
-import choke3d.engine.FPSCamera;
-import choke3d.engine.Texture;
+import choke3d.App;
+import choke3d.gl.FPSCamera;
+import choke3d.gl.Texture;
 
 /**
  *

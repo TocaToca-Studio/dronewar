@@ -1,5 +1,6 @@
 package dronewar.client;
 
+import dronewar.server.Server;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -94,7 +95,7 @@ public class LoginFrame extends JFrame {
             // Aqui você pode adicionar o código para conectar ao servidor com o nick e senha
             System.out.println("Tentando login com o IP: " + ip + " e Nick: " + nick);
             if(client.packetHandler.connect(nick, ip, 25532)) {
-                JOptionPane.showMessageDialog(this,"Conectado!");
+                //JOptionPane.showMessageDialog(this,"Conectado!");
                 setVisible(false);
                 client.run();
             } else {
@@ -106,6 +107,10 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
     public static void main(String[] args) {
+        (new Thread(()->{
+            Server server=new Server();
+            server.run();
+        })).start();
         (new LoginFrame()).setVisible(true);
     }
 }

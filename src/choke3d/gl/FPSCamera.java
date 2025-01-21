@@ -1,16 +1,19 @@
-package choke3d.engine;
- 
+package choke3d.gl;
+  
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse; 
-import choke3d.math.Vec3f; 
+import choke3d.math.Vec3f;
 import choke3d.math.Mat4f;
-import choke3d.math.Quat; 
+import choke3d.math.Quat;
+import choke3d.math.Transform;
 import choke3d.math.Vec2f; 
+import choke3d.vika.frontend.Camera;
 /**
  *
  * @author tocatocaq
  */
 public class FPSCamera extends Camera {
+    public Transform transform=new Transform();
     public float velocity=10;  
     public FPSCamera() {
         super();
@@ -35,5 +38,6 @@ public class FPSCamera extends Camera {
         }
         mov=Mat4f.IDENTITY().translated(mov).rotated(transform.rotation).translation();
         transform.position=transform.position.add(mov);
+        super.setViewMatrix(transform.viewMatrix());
     }
 }

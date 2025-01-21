@@ -1,7 +1,9 @@
 package dronewar.server;
 
 import choke3d.utils.BinaryPackage;
-import choke3d.utils.ChecksumUtil;
+import choke3d.utils.UDPCompression;
+import dronewar.server.game.Player;
+import dronewar.server.protocol.ControlData;
 import dronewar.server.protocol.ErrorData;
 import dronewar.server.protocol.GeneralUpdateData;
 import dronewar.server.protocol.LoginData;
@@ -40,24 +42,49 @@ public class PacketHandler extends Thread {
        }
     }
     public void handle_message(ByteBuffer buffer,int message_code,InetAddress clientAddress,int clientPort) { 
-        
+        String connection=clientAddress + ":" + clientPort;
         try {
             if(message_code==Protocol.LOGIN_REQUEST) {
                 LoginData loginData=new LoginData();
                 loginData.decode(buffer);
                 System.out.println("Player " + loginData.name + " tentou logar");
-                String connection=clientAddress + ":" + clientPort;
-                int player_id=server.room.register_player(connection,loginData.name);
+                
+                Player player=server.room.register_player(connection,loginData.name);
                 System.out.println("Player " + loginData.name + " logou");
-                send_response(Protocol.SUCCESS,null,clientAddress,clientPort);
-            } else if(message_code==Protocol.GENERAL_UPDATE) {
+                send_response(Protocol.LOGIN_REQUEST,
+                        player
+                        ,clientAddress,clientPort);
+            } else if(message_code==Protocol.GENERAL_UPDATE) {  
+                int player=0;
+                try {
+                    player=server.room.get_player_id(connection);
+                } catch (Exception ex) {
+                    Logger.getLogger(PacketHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    return;
+                } 
+                synchronized(server.room.player_controls) {
+                    if(!server.room.player_controls.containsKey(player)) {
+                        ControlData control=new ControlData();
+                        control.unpack(buffer);
+                        server.room.player_controls.put(player,control);
+                    }else {
+                        server.room.player_controls.get(player).unpack(buffer);
+                    }
+                }
+                
                 GeneralUpdateData data=new GeneralUpdateData();
-                data.bullets.clear();
-                data.bullets.addAll(server.room.bullets);
-                data.drones.clear();
-                data.drones.addAll(server.room.drones.values());
+                
+                synchronized(server.room.bullets) {
+                    data.bullets.clear();
+                    data.bullets.addAll(server.room.bullets);
+                }
+                synchronized(server.room.drones) {
+                        data.drones.clear();
+                        data.drones.addAll(server.room.drones.values());
+                }
                 data.safezone=server.room.safezone;
                 send_response(Protocol.GENERAL_UPDATE,data,clientAddress,clientPort);
+                
             }  else if(message_code==Protocol.FAIL) {
                 System.out.println("Servidor não reconheceu pacote.");
             }  else {
@@ -71,22 +98,26 @@ public class PacketHandler extends Thread {
         }
     }
     public void handle_packet(DatagramPacket packet) {
-        // Processa a mensagem recebida
-        InetAddress clientAddress = packet.getAddress();
-        int clientPort = packet.getPort();
-        //String connection=clientAddress + ":" + clientPort;
-        //System.out.println("Pacote recebido de " + connection + " ("+packet.getLength()+" bytes)");
-
-        ByteBuffer buffer=ByteBuffer.wrap(packet.getData());
-       /*if(!ChecksumUtil.verifyChecksum(buffer)) {
+        try {
+            // Processa a mensagem recebida
+            InetAddress clientAddress = packet.getAddress();
+            int clientPort = packet.getPort();
+            //String connection=clientAddress + ":" + clientPort;
+            //System.out.println("Pacote recebido de " + connection + " ("+packet.getLength()+" bytes)");
+            
+            ByteBuffer buffer=ByteBuffer.wrap(UDPCompression.decompress(packet.getData()));
+            /*if(!ChecksumUtil.verifyChecksum(buffer)) {
             System.out.println("PACOTE CORROMPIDO CHECKSUM INVALIDO!");
             return;
-        }*/
-        int message_code=buffer.getInt();
-        handle_message(buffer,message_code,clientAddress,clientPort);  
+            }*/
+            int message_code=buffer.getInt();
+            handle_message(buffer,message_code,clientAddress,clientPort);  
+        } catch (IOException ex) {
+            Logger.getLogger(PacketHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    byte[] buffer = new byte[65535];
     public void listen()  {  
-        byte[] buffer = new byte[1024];
         try {
             socket = new DatagramSocket(port);
         } catch (SocketException ex) {

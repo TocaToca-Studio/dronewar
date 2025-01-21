@@ -8,16 +8,15 @@ import choke3d.utils.BinaryPackage;
  * @author tocatoca
  */
 public class Bullet extends BinaryPackage implements Sphere {
-    public Vec3f direction=new Vec3f(0,0,0);
-    public Vec3f position=new Vec3f(0,0,0);
-    public float velocity=10;
-    public float energy=10;
-    public int player=0;
+    public Vec3f velocity=new Vec3f(0,0,0);
+    public Vec3f position=new Vec3f(0,0,0); 
+    public float energy=2;
+    public int player=0; 
     
-    void update(float delta) {
+    void update(double delta) { 
         energy-=delta;
         position=position.add(
-            direction.normalized().mul(velocity*delta)
+            velocity.mul((float)delta)
         );
     }
 
@@ -33,25 +32,22 @@ public class Bullet extends BinaryPackage implements Sphere {
     
     public Bullet() {
         super();  
-        putField("direction","vec3f");   
-        putField("position","vec3f");   
-        putField("velocity","float");   
+        putField("velocity","vec3f");   
+        putField("position","vec3f");    
         putField("energy","float");   
         putField("player","int");   
     }
     @Override
-    public void serialize() {
-        putValue("direction",direction);   
+    public void serialize() {   
+        putValue("velocity",velocity); 
         putValue("position",position);   
-        putValue("velocity",velocity);   
         putValue("energy",energy);   
         putValue("player",player);   
     }
     @Override
     public void unserialize() {
-        direction=getVec3f("direction");   
+        velocity=getVec3f("velocity");   
         position=getVec3f("position");   
-        velocity=getFloat("velocity");   
         energy=getFloat("energy");   
         player=getInt("player");   
     }

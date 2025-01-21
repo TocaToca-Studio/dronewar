@@ -27,6 +27,10 @@ public class Vec3f {
                LERP(a.z,b.z,factor)
        );
     }
+
+    public Vec3f copy() {
+        return new Vec3f(x,y,z);
+    }
     // Overload operators as methods
     public Vec3f add(Vec3f v) {
         return new Vec3f(x + v.x, y + v.y, z + v.z);

@@ -1,6 +1,6 @@
 package tocaterrain;
 
-import choke3d.engine.App;
+import choke3d.App;
 import choke3d.math.MathUtils;
 import choke3d.math.Vec3f;
 

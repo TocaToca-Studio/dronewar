@@ -1,7 +1,7 @@
 package dronewar.server;
 
 import dronewar.server.game.Room;
-import choke3d.engine.Timing;
+import choke3d.vika.backend.legacy.LegacyTiming;
 import dronewar.server.game.Drone;
 import javax.swing.JOptionPane;
 
@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 public class Server {
     Room room=new Room();
     boolean running=false;
-    Timing time=new Timing(); 
+    LegacyTiming time=new LegacyTiming(); 
     
     PacketHandler listenThread=new PacketHandler(this);
     public void run()  {
@@ -21,7 +21,7 @@ public class Server {
         running=true;
         listenThread.start();
         while(running) {
-            float delta=time.update();
+            double delta=time.update();
             //System.out.println("delta:"+delta);
             room.update(delta);
             // limit server to 200FPS
@@ -32,7 +32,7 @@ public class Server {
         listenThread.interrupt();
     }
     public static void main(String[] args) {  
-        Server server=(new Server());
+        Server server=new Server();
         (new Thread(() -> {
             JOptionPane.showMessageDialog(null, "Clique para fechar");
             server.running=false;

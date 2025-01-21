@@ -1,4 +1,4 @@
-package choke3d.engine;
+package choke3d.gl;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
