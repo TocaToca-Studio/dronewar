@@ -7,6 +7,5 @@ package choke3d.vika.frontend;
  */
 public interface Texture {
     public void load(Image texture);
-    public void unload();
-    public int getID();
+    public void unload(); 
 }

@@ -5,8 +5,10 @@ import choke3d.math.Mat4f;
 import choke3d.math.Vec2f;
 import choke3d.math.Vec4f;
 import choke3d.vika.frontend.Camera;
+import choke3d.vika.frontend.DrawObject;
 import choke3d.vika.frontend.mesh.Mesh;
 import choke3d.vika.frontend.Scene;
+import choke3d.vika.frontend.Texture;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -17,15 +19,21 @@ import static org.lwjgl.opengl.GL11.*;
  * @author tocatoca
  */
 public class LegacyScene extends Scene {
-    
+    public DrawObject skybox;
     @Override
     public void init() { 
         glEnable(GL11.GL_TEXTURE);
         glEnable(GL_TEXTURE_2D);
+        Mesh skybox_mesh=new LegacyMesh();
+        skybox_mesh.load(Mesh.get_skybox());
+        skybox=new DrawObject(skybox_mesh);
+        skybox.material.albedo_color.r=0.5f;
+        skybox.material.albedo_color.g=0.5f;
     }
 
     FloatBuffer projection_buffer=BufferUtils.createFloatBuffer(16);
     FloatBuffer modelview_buffer=BufferUtils.createFloatBuffer(16);
+    FloatBuffer model_buffer=BufferUtils.createFloatBuffer(16);
     private FloatBuffer put_matrix(FloatBuffer buff,Mat4f mat) {
         buff.clear();
         for(float[] row : mat.m) buff.put(row);
@@ -75,6 +83,14 @@ public class LegacyScene extends Scene {
         // Definir a matriz de modelagem
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity(); 
+        Vec4f angles=camera.getViewMatrix().to_quaternion().conjugate().to_angles();
+        GL11.glRotatef(angles.w, angles.x, angles.y, angles.z);
+        //glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+        GL11.glDisable(GL_DEPTH_TEST);
+        draw_object(skybox);
+        GL11.glEnable(GL_DEPTH_TEST);
+        
+        glLoadIdentity();
         
         GL11.glLoadMatrix(put_matrix(modelview_buffer,camera.getViewMatrix())); 
     }
@@ -86,8 +102,29 @@ public class LegacyScene extends Scene {
     }
 
     @Override
-    public void draw_object(Mesh obj) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void draw_object(DrawObject obj) {
+        if(obj.mesh==null || obj.material==null) {
+            System.out.println("SEM MESH OU SEM MATERIAL");
+            return;
+        }
+        Color4f color=obj.material.albedo_color;
+        glColor4f(color.r,color.g,color.b,color.a);
+        if(obj.material.albedo!=null && obj.material.albedo instanceof LegacyTexture) {
+            LegacyTexture albedo=(LegacyTexture) obj.material.albedo;
+            albedo.bind();
+        } else {
+            GL11.glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        glPushMatrix();
+        //GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL_LINE);
+        ((LegacyMesh) obj.mesh).draw();
+        GL11.glLoadMatrix(put_matrix(model_buffer,obj.model));  
+        glPopMatrix();
+    }
+
+    @Override
+    public void set_skybox_texture(Texture sky) {
+        skybox.material.albedo=sky;
     }
     
     

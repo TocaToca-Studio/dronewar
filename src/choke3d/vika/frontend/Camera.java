@@ -18,8 +18,8 @@ public class Camera {
     public float fogDensity=1;
     public Color4f fogColor= Color4f.GRAY();
     public Rect viewport = new Rect();  
-    protected Mat4f view_matrix;
-
+    protected Mat4f view_matrix=Mat4f.IDENTITY();
+    
     // Enum for camera modes
     public enum CameraMode {
         CAMERA_HUD,

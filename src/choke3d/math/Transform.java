@@ -48,7 +48,7 @@ public class Transform {
     // Generate view matrix
     public Mat4f viewMatrix() {
         return Mat4f.mul(
-            Mat4f.IDENTITY().rotated(rotation.normalize()), 
+            Mat4f.IDENTITY().rotated(rotation.conjugate().normalize()), 
             Mat4f.IDENTITY().translated(-position.x, -position.y, -position.z)
         );
     }

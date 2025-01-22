@@ -1,6 +1,6 @@
 package dronewar.client;
   
-import choke3d.gl.FPSCamera;
+import choke3d.vika.FPSCamera;
 import choke3d.math.Mat4f;
 import choke3d.math.Quat;
 import choke3d.math.Transform;

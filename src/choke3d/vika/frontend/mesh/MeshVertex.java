@@ -11,4 +11,5 @@ public class MeshVertex {
     public Vec3f position=new Vec3f();
     public Vec3f normal=new Vec3f();
     public Vec2f uv=new Vec2f();
+    
 }

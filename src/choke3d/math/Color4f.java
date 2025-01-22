@@ -150,4 +150,5 @@ public class Color4f {
     private static float lerp(float a, float b, float factor) {
         return a + factor * (b - a);
     }
+    
 }

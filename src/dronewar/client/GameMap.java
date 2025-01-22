@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import choke3d.mesh.Heightmap;
+import choke3d.vika.backend.JavaImageWraper;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -18,7 +19,7 @@ public class GameMap {
         terrain=new Heightmap(2,2); 
         try { 
             terrain.load(ImageIO.read(this.getClass().getResourceAsStream("../assets/map/map0_hmap.jpg")));
-            terrain.texture.load(ImageIO.read(this.getClass().getResourceAsStream("../assets/map/map0_texture.jpg")));
+            terrain.texture.load(new JavaImageWraper(ImageIO.read(this.getClass().getResourceAsStream("../assets/map/map0_texture.jpg"))));
         } catch (IOException ex) {
             Logger.getLogger(GameMap.class.getName()).log(Level.SEVERE, null, ex);
         }

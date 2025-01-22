@@ -8,28 +8,28 @@ import java.util.HashMap;
  * @author tocatoca
  */
 public abstract class Input {
-    public final int KEY_FREE = 0;
-    public final int KEY_PRESSED = 1;
-    public final int KEY_PRESSING = 2;
-    public final int KEY_RELEASED = 3;
+    public static final int KEY_FREE = 0;
+    public static final int KEY_PRESSED = 1;
+    public static final int KEY_PRESSING = 2;
+    public static final int KEY_RELEASED = 3;
     
-    public final int NONE=0;
-    public final int CROSS=1;
-    public final int TRIANGLE=2;
-    public final int CIRCLE=3;
-    public final int QUAD=4;
-    public final int R1=5;
-    public final int R2=6;
-    public final int R3=7;
-    public final int L1=8;
-    public final int L2=9;
-    public final int L3=10;
-    public final int UP=11;
-    public final int DOWN=12;
-    public final int LEFT=13;
-    public final int RIGHT=14;
-    public final int START=15;
-    public final int SELECT=16; 
+    public static final int NONE=0;
+    public static final int CROSS=1;
+    public static final int TRIANGLE=2;
+    public static final int CIRCLE=3;
+    public static final int QUAD=4;
+    public static final int R1=5;
+    public static final int R2=6;
+    public static final int R3=7;
+    public static final int L1=8;
+    public static final int L2=9;
+    public static final int L3=10;
+    public static final int UP=11;
+    public static final int DOWN=12;
+    public static final int LEFT=13;
+    public static final int RIGHT=14;
+    public static final int START=15;
+    public static final int SELECT=16; 
     
     private final int[] key_state=new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     

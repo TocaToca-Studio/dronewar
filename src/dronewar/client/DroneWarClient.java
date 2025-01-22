@@ -1,7 +1,7 @@
 package dronewar.client;
 
-import choke3d.App;
-import choke3d.gl.FPSCamera; 
+import tocaterrain.App;
+import choke3d.vika.FPSCamera; 
 import dronewar.server.game.Bullet;
 import dronewar.server.game.Drone; 
 import dronewar.server.game.Player;

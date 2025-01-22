@@ -1,10 +1,11 @@
 package tocaterrain;
-
-import choke3d.gl.Texture;
+ 
 import java.awt.image.BufferedImage;
 import static org.lwjgl.opengl.GL11.*; 
 import choke3d.math.Vec3f;
 import choke3d.math.Color4f;
+import choke3d.vika.backend.legacy.LegacyTexture;
+import choke3d.vika.frontend.Texture;
 
 /**
  *
@@ -16,7 +17,7 @@ public class Heightmap {
     public float[][] heightmap;
     public float xzscale=1;
     public float hscale=2;
-    public Texture texture=new Texture();
+    public LegacyTexture texture=new LegacyTexture();
     
     public boolean draw_wireframe=true;
     public boolean colored_wireframe=true;

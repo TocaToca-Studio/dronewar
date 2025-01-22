@@ -15,8 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.input.Keyboard;
-import choke3d.App;
-import choke3d.gl.FPSCamera;
+import choke3d.vika.FPSCamera;
+import choke3d.vika.backend.JavaImageWraper;
   
 /**
  *
@@ -63,7 +63,7 @@ public class TocaTerrain extends App {
     public void reload() { 
         try {  
             if(imported_hmap_file!=null) heightmap.load(ImageIO.read(imported_hmap_file));  
-            if(imported_texture_file!=null)  heightmap.texture.load(ImageIO.read(imported_texture_file));  
+            if(imported_texture_file!=null)  heightmap.texture.load(new JavaImageWraper(ImageIO.read(imported_texture_file)));  
             
             painel.load_data();
         } catch (IOException ex) {
@@ -88,7 +88,7 @@ public class TocaTerrain extends App {
             if (result == JFileChooser.APPROVE_OPTION) {
                 // Obter o arquivo selecionado
                 File imageFile = fileChooser.getSelectedFile();
-                heightmap.texture.load(ImageIO.read(imageFile));
+                heightmap.texture.load(new JavaImageWraper(ImageIO.read(imageFile)));
                 imported_texture_file=imageFile;
                 heightmap.draw_terrain=true;
                 heightmap.colored_terrain=false;
