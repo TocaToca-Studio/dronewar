@@ -1,6 +1,7 @@
-package choke3d.utils;
+package choke3d.network;
 
 import choke3d.math.Quat;
+import choke3d.math.Vec2f;
 import choke3d.math.Vec3f;
 import dronewar.server.game.Drone;
 import java.io.ByteArrayOutputStream;
@@ -76,6 +77,9 @@ public class BinaryPackage {
     public Vec3f getVec3f(String field) {
         return (Vec3f) getValue(field);
     }
+    public Vec2f getVec2f(String field) {
+        return (Vec2f) getValue(field);
+    }
     public Quat getQuat(String field) {
         return (Quat) getValue(field);
     }
@@ -120,6 +124,9 @@ public class BinaryPackage {
                     break;
                 case "vec3f":
                     bufferSize += Float.SIZE*3;
+                    break;
+                case "vec2f":
+                    bufferSize += Float.SIZE*2;
                     break;
                 case "quat":
                     bufferSize += Float.SIZE*4;
@@ -189,6 +196,11 @@ public class BinaryPackage {
                     buff.putFloat(vec.x);
                     buff.putFloat(vec.y);
                     buff.putFloat(vec.z);
+                    break;
+                case "vec2f":
+                    Vec2f vec2=(Vec2f) value;
+                    buff.putFloat(vec2.x);
+                    buff.putFloat(vec2.y); 
                     break;
                 case "quat":
                     Quat q=(Quat) value;
@@ -278,6 +290,11 @@ public class BinaryPackage {
                 case "vec3f":
                         values.put(fieldName, 
                                 new Vec3f(buff.getFloat(),buff.getFloat(),buff.getFloat())
+                        );
+                        break;
+                case "vec2f":
+                        values.put(fieldName, 
+                                new Vec2f(buff.getFloat(),buff.getFloat())
                         );
                         break;
                 case "quat":

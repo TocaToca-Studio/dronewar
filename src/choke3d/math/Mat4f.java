@@ -322,6 +322,7 @@ public class Mat4f {
         );
     }
     static public Mat4f perspective(float fovy, float aspect, float zNear, float zFar) {
+        fovy=(float) Math.toRadians(fovy);
         float tanHalfFovy = (float) tan(fovy / (float) 2);
 
         Mat4f result = Mat4f.ZERO();
@@ -341,6 +342,34 @@ public class Mat4f {
             0, 0, (zNear + zFar) / range, 2 * zFar * zNear / range,
             0, 0, -1, 0
         );
+    }
+    static public Mat4f perspective_new(float fovy, float aspect, float zNear, float zFar) {
+       float top = (float) (zNear * Math.tan(Math.toRadians(fovy / 2.0)));
+        float bottom = -top;
+        float right = top * aspect;
+        float left = -right;
+
+        // Definir a perspectiva com glFrustum
+        return frustrum(left, right, bottom, top, zNear, zFar); 
+    }
+    static public Mat4f frustrum(float left, float right,
+               float bottom, float top,
+               float nearval, float farval) { 
+        
+        float x, y, a, b, c, d;
+         x = (2.0F * nearval) / (right - left);
+        y = (2.0F * nearval) / (top - bottom);
+        a = (right + left) / (right - left);
+        b = (top + bottom) / (top - bottom);
+        c = -(farval + nearval) / (farval - nearval);
+        d = -(2.0F * farval * nearval) / (farval - nearval);
+
+        return new Mat4f(
+          x,    0.0f,  a,    0.0f,
+          0.0f, y,    b,     0.0f,
+          0.0f,  0.0f,  c,    d,
+         0.0f,  0.0f, -1.0f, 0.0f
+        ).transpose();
     }
     static public Mat4f ortho(float left, float right, float bottom, float top, float zNear, float zFar) {
         Mat4f result = Mat4f.IDENTITY();

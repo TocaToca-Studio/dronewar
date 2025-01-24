@@ -1,6 +1,6 @@
 package dronewar.server.protocol;
 
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryPackage;
 import dronewar.server.game.Bullet;
 import dronewar.server.game.Drone;
 import dronewar.server.game.Safezone;

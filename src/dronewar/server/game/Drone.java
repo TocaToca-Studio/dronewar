@@ -1,26 +1,29 @@
 package dronewar.server.game;
 
+import choke3d.math.Color4f;
 import choke3d.math.Mat4f;
 import choke3d.math.Quat;
 import choke3d.math.Vec3f;
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryPackage;
+import java.util.Random;
 
 /**
  *
  * @author tocatoca
  */
 public class Drone extends BinaryPackage implements Sphere {
-    public Vec3f position=new Vec3f(0,0,0);
+    public Vec3f position=new Vec3f(0,10,0);
     public Quat rotation=new Quat();
     public float energy=100;
-    public float velocity=13f;
+    public float velocity=1f;
     public int player=0;
     final float FIRERATE=1f/2f; // dois tiros por segundo
     public float fire_timeout=0.1f;
     
+    
     @Override
     public float getRadius() {
-        return energy/10f;
+        return 5;//energy/50f;
     } 
     void update(double delta) {
         if(fire_timeout>0) fire_timeout-=delta;
@@ -31,7 +34,9 @@ public class Drone extends BinaryPackage implements Sphere {
             direction.normalized().mul(velocity*(float)delta)
         );
     }
-
+    public Color4f get_color() { 
+        return PlayerColorGenerator.getColor(player,energy/100.0f);
+    }
     @Override
     public Vec3f getPosition() {
         return position;

@@ -1,7 +1,7 @@
 package tocaterrain;
 
 import choke3d.vika.backend.legacy.LegacyTiming; 
-import choke3d.vika.FPSCamera;
+import choke3d.FPSCamera;
 import choke3d.math.Vec3f;
 import choke3d.vika.frontend.Camera;
 import org.lwjgl.LWJGLException;

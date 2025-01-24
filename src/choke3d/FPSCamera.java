@@ -1,6 +1,5 @@
-package choke3d.vika;
-   
-import org.lwjgl.input.Mouse; 
+package choke3d;
+    
 import choke3d.math.Vec3f;
 import choke3d.math.Mat4f;
 import choke3d.math.Quat;
@@ -26,15 +25,15 @@ public class FPSCamera extends Camera {
         float delta=(float) platform.get_delta();
         Quat rot=Quat.IDENTITY();
         angles.x-=delta*axis.x;
-        angles.y+=delta*axis.y;
-        rot.rotate(angles.y, new Vec3f(1f,0,0));
+        angles.y-=delta*axis.y;
+        rot.rotate(angles.y, new Vec3f(1f, 0, 0));
         rot.rotate(angles.x, new Vec3f(0f,1f,0));
         transform.rotation=rot; 
             
         Vec3f mov=new Vec3f(0,0,0);
-        if(platform.get_input().pressing(Input.TRIANGLE)) mov.z-=1.0f*delta;
-        if(platform.get_input().pressing(Input.CROSS)) mov.z+=1.0f*delta;
-        mov=Mat4f.IDENTITY().translated(mov).rotated(transform.rotation).translation();
+        if(platform.get_input().pressing(Input.TRIANGLE)) mov.z-=1.0f;
+        if(platform.get_input().pressing(Input.CROSS)) mov.z+=1.0f;
+        mov=Mat4f.IDENTITY().translated(mov).rotated(transform.rotation).translation().mul(velocity*delta);
         transform.position=transform.position.add(mov);
         super.setViewMatrix(transform.viewMatrix());
     }

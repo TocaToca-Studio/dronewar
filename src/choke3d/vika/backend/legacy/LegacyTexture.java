@@ -3,8 +3,7 @@ package choke3d.vika.backend.legacy;
 import choke3d.math.Color4f;
 import choke3d.math.MathUtils;
 import choke3d.vika.frontend.Image;
-import choke3d.vika.frontend.Texture;
-import java.awt.image.BufferedImage;
+import choke3d.vika.frontend.Texture; 
 import java.nio.ByteBuffer;
 import org.lwjgl.opengl.GL11;
 
@@ -13,7 +12,7 @@ import org.lwjgl.opengl.GL11;
  * @author tocatoca
  */
 public class LegacyTexture implements Texture {
- int texture_id = 0;
+    int texture_id = 0;
     public boolean loaded() {
         return texture_id!=0;
     }  
@@ -39,7 +38,7 @@ public class LegacyTexture implements Texture {
         int width = img.getWidth();
         int height = img.getHeight();
         // Converte a BufferedImage para ByteBuffer
-        ByteBuffer buffer=ByteBuffer.allocateDirect(3 * width * height);
+        ByteBuffer buffer=ByteBuffer.allocateDirect(4 * width * height);
         for(int x=0;x<width ;x++) {
              for(int y=0;y<height;y++) {
                 Color4f color = img.getPixelColor(x, (height -1 ) - y);  // Obtém o valor RGB da imagem 
@@ -48,6 +47,7 @@ public class LegacyTexture implements Texture {
                 buffer.put(MathUtils.FLOAT_TO_BYTE(color.r));  // Valor de r
                 buffer.put(MathUtils.FLOAT_TO_BYTE(color.g));  // Valor g
                 buffer.put(MathUtils.FLOAT_TO_BYTE(color.b));  // Valor b
+                buffer.put(MathUtils.FLOAT_TO_BYTE(color.a));  // Valor b
              }
         }
         buffer.flip();
@@ -59,7 +59,7 @@ public class LegacyTexture implements Texture {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
-        int format = GL11.GL_RGB;
+        int format = GL11.GL_RGBA;
         
         // Cria a textura no OpenGL
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, format, width, height, 0, format, GL11.GL_UNSIGNED_BYTE, buffer);

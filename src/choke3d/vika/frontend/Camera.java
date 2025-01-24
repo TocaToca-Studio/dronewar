@@ -66,10 +66,11 @@ public class Camera {
         fixAspect = false;
         near = -0.01f;
         far = 30;
-        orthoTop = 0;
-        orthoBottom = screenW;
+        // Correção das variáveis de projeção ortográfica
         orthoLeft = 0;
-        orthoRight = screenH;
+        orthoRight = screenW;
+        orthoBottom = screenH;
+        orthoTop = 0;
     }
 
     // Setup 3D camera
@@ -78,7 +79,7 @@ public class Camera {
         isPerspective = true;
         fixAspect = true;
         near = 0.1f;
-        far = 3000;
+        far = 800;
         fogDensity = 2;
         fov = fovy;
     }
@@ -87,7 +88,7 @@ public class Camera {
     public Rect getViewport() { return viewport; }
     public Mat4f getProjectionMatrix() {
            if (isPerspective) {
-            return Mat4f.perspective(fov, aspect, near, far);
+            return Mat4f.perspective_new(fov, aspect, near, far);
         }
         return fixAspect ?
                 Mat4f.ortho(orthoBottom * aspect, orthoTop * aspect, orthoBottom, orthoTop, near, far) :

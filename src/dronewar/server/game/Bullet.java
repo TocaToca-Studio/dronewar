@@ -1,7 +1,7 @@
 package dronewar.server.game;
 
 import choke3d.math.Vec3f;
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryPackage;
 
 /**
  *
@@ -10,7 +10,7 @@ import choke3d.utils.BinaryPackage;
 public class Bullet extends BinaryPackage implements Sphere {
     public Vec3f velocity=new Vec3f(0,0,0);
     public Vec3f position=new Vec3f(0,0,0); 
-    public float energy=2;
+    public float energy=5;
     public int player=0; 
     
     void update(double delta) { 
@@ -22,7 +22,7 @@ public class Bullet extends BinaryPackage implements Sphere {
 
     @Override
     public float getRadius() {
-        return energy/10f;
+        return 2;//energy/10f;
     }
 
     @Override

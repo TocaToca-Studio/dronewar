@@ -1,65 +1,45 @@
 package dronewar.client;
   
-import choke3d.vika.FPSCamera;
-import choke3d.math.Mat4f;
-import choke3d.math.Quat;
 import choke3d.math.Transform;
-import choke3d.math.Vec2f;
-import choke3d.math.Vec3f;
+import choke3d.FPSCamera;  
+import choke3d.math.Mat4f;
+import choke3d.math.Vec3f; 
 import choke3d.vika.frontend.Camera;
-import dronewar.server.game.Drone;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import choke3d.vika.frontend.Input;
+import choke3d.vika.frontend.Platform;
+import dronewar.server.game.Drone; 
 /**
  *
- * @author tocatocaq
+ * @author tocatoca
  */
-public class DroneCamera extends FPSCamera {
-    Transform transform=new Transform();
-    public float velocity=10;  
-    public Drone target=null;
-    Vec3f position=new Vec3f(0,0,0);
-    public Vec2f angles=new Vec2f(0,0);
+public class DroneCamera extends FPSCamera { 
+    public Drone target=null; 
     float yoffset=1;
-    
+    public boolean follow_drone=false;
     public DroneCamera() {
         super();
         this.setup3D(60);
     }
-    
-    public void update(float delta) { 
-        /*transform.position=position.add(
-            Mat4f.IDENTITY().translated(
-            new Vec3f(0,0,zoffset)
-            ).rotated(transform.rotation).translation()
-        );*/
+     
+    public void update(Platform platform) { 
+        if(platform.get_input().pressed(Input.SELECT)) {
+            follow_drone=!follow_drone;
+        }
+        if(!follow_drone) {
+            super.update(platform);
+            return;
+        }
+        float delta=(float) platform.get_delta();
         if(target!=null) { 
             Vec3f target_pos=target.position.copy();
+            target_pos=target_pos.add(
+             Mat4f.IDENTITY().translated(Vec3f.BACK()).rotated(target.rotation).translation().mul(20)
+            );
             target_pos.y+=yoffset ;//+ target.getRadius()
-            transform.position=Vec3f.lerp(transform.position, target_pos, delta*2);
-            
+            transform.position=Vec3f.lerp(transform.position, target_pos, delta*5); 
             transform.rotation=target.rotation;
         }
-        view_matrix=transform.viewMatrix();
-       /* if(Mouse.isButtonDown(1)) {
-            Quat rot=Quat.IDENTITY();
-            angles.x-=delta*Mouse.getDY();
-            angles.y+=delta*Mouse.getDX();
-            rot.rotate(angles.x, new Vec3f(1f,0,0));
-            rot.rotate(angles.y, new Vec3f(0f,1f,0));
-            transform.rotation=target.rotation;
-        }*/ 
-        /*Vec3f mov=new Vec3f(0,0,0);
-        if(Keyboard.isKeyDown(Keyboard.KEY_W)) mov.z-=delta;
-        if(Keyboard.isKeyDown(Keyboard.KEY_S)) mov.z+=delta;
-        if(Keyboard.isKeyDown(Keyboard.KEY_E)) mov.y+=delta;
-        if(Keyboard.isKeyDown(Keyboard.KEY_Q)) mov.y-=delta;
-        if(Keyboard.isKeyDown(Keyboard.KEY_D)) mov.x+=delta;
-        if(Keyboard.isKeyDown(Keyboard.KEY_A)) mov.x-=delta;
-        mov=Mat4f.IDENTITY().translated(mov).rotated(transform.rotation).translation();
-       
-        transform.position=transform.position.add(mov);
-        */
+        setViewMatrix(transform.viewMatrix()); 
         
     }
 }

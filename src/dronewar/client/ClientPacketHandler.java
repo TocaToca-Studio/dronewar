@@ -1,8 +1,8 @@
 package dronewar.client;
 
-import choke3d.utils.BinaryPackage;
-import choke3d.utils.ChecksumUtil;
-import choke3d.utils.UDPCompression;
+import choke3d.network.BinaryPackage;
+import choke3d.network.ChecksumUtil;
+import choke3d.network.UDPCompression;
 import dronewar.server.Server;
 import dronewar.server.protocol.ErrorData;
 import dronewar.server.protocol.LoginData;

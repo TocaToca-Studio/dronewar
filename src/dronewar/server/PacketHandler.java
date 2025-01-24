@@ -1,7 +1,7 @@
 package dronewar.server;
 
-import choke3d.utils.BinaryPackage;
-import choke3d.utils.UDPCompression;
+import choke3d.network.BinaryPackage;
+import choke3d.network.UDPCompression;
 import dronewar.server.game.Player;
 import dronewar.server.protocol.ControlData;
 import dronewar.server.protocol.ErrorData;

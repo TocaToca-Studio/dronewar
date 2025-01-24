@@ -29,4 +29,9 @@ public class JavaImageWraper implements Image  {
         return img.getHeight();
     }
 
+    @Override
+    public void setPixelColor(int x, int y, Color4f color) {
+        img.setRGB(x, y, color.to_rgb());
+    }
+
 }

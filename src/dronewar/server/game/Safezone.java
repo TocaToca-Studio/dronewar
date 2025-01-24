@@ -1,7 +1,7 @@
 package dronewar.server.game;
 
 import choke3d.math.Vec3f;
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryPackage;
 
 /**
  *

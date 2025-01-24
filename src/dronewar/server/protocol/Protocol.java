@@ -1,8 +1,8 @@
 package dronewar.server.protocol;
 
-import choke3d.utils.BinaryPackage;
-import choke3d.utils.ChecksumUtil;
-import choke3d.utils.UDPCompression;
+import choke3d.network.BinaryPackage;
+import choke3d.network.ChecksumUtil;
+import choke3d.network.UDPCompression;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;

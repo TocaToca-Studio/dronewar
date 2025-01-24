@@ -31,16 +31,25 @@ public class Color4f {
 
     public static Color4f from_RGB(int rgb) {
          // Extrair os componentes R, G, B do valor RGB
+        int a = (rgb >> 24) & 0xFF;
         int r = (rgb >> 16) & 0xFF;
         int g = (rgb >> 8) & 0xFF;
         int b = rgb & 0xFF;
 
         // Converter de 0-255 para 0.0-1.0
+        float aFloat = a / 255.0f;
         float rFloat = r / 255.0f;
         float gFloat = g / 255.0f;
         float bFloat = b / 255.0f;
  
-       return new Color4f(rFloat, gFloat, bFloat,1);
+       return new Color4f(rFloat, gFloat, bFloat,aFloat);
+    }
+     public int to_rgb() {
+        int _a = (int) (r * 255);
+        int _r = (int) (r * 255);
+        int _g = (int) (g * 255);
+        int _b = (int) (b * 255);
+        return (_r << 24) | (_r << 16) | (_g << 8) | _b;
     }
     public float r, g, b, a;
 

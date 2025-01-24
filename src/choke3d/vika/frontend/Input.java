@@ -31,13 +31,13 @@ public abstract class Input {
     public static final int START=15;
     public static final int SELECT=16; 
     
-    private final int[] key_state=new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    private final int[] key_state=new int[] {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     
     public boolean pressing(int button){
         if(button>16 || button<0) return false;
         return key_state[button]==KEY_PRESSING || key_state[button]==KEY_RELEASED;
     }
-    public boolean presed(int button) { 
+    public boolean pressed(int button) { 
         if(button>16 || button<0) return false;
         return key_state[button]==KEY_PRESSED;
     }
@@ -55,9 +55,24 @@ public abstract class Input {
         return mov;
     }
     protected abstract int get_key_state(int key);
+    public abstract void init();
     public void update() {
-        for(int i=0;i<key_state.length;i++) key_state[i]=get_key_state(i);
-    }
+        for (int i = 0; i < key_state.length; i++) {
+            int old_state = key_state[i];
+            int new_state = get_key_state(i);
 
+            if (old_state == KEY_FREE && new_state == KEY_PRESSING) {
+                key_state[i] = KEY_PRESSED;
+            } else if (old_state == KEY_PRESSED && new_state == KEY_PRESSING) {
+                key_state[i] = KEY_PRESSING;
+            } else if ((old_state == KEY_PRESSED || old_state == KEY_PRESSING) && new_state == KEY_FREE) {
+                key_state[i] = KEY_RELEASED;
+            } else if (old_state == KEY_RELEASED && new_state == KEY_PRESSING) {
+                key_state[i] = KEY_PRESSING;
+            } else if (old_state == KEY_RELEASED && new_state == KEY_FREE) {
+                key_state[i] = KEY_FREE;
+            }
+        }
+    } 
    
 }

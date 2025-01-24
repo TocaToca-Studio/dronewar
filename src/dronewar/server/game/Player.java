@@ -1,6 +1,6 @@
 package dronewar.server.game;
 
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryPackage;
 
 /**
  *

@@ -1,4 +1,4 @@
-package choke3d.utils;
+package choke3d.network;
 
 import java.nio.ByteBuffer; 
 

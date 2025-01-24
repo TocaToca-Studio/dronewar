@@ -49,7 +49,7 @@ public class Transform {
     public Mat4f viewMatrix() {
         return Mat4f.mul(
             Mat4f.IDENTITY().rotated(rotation.conjugate().normalize()), 
-            Mat4f.IDENTITY().translated(-position.x, -position.y, -position.z)
+            Mat4f.IDENTITY().translated(position.opposite())
         );
     }
 

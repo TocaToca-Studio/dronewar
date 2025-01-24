@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.lwjgl.input.Keyboard;
-import choke3d.vika.FPSCamera;
+import choke3d.FPSCamera;
 import choke3d.vika.backend.JavaImageWraper;
   
 /**

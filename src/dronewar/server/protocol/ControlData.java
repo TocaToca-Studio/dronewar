@@ -2,19 +2,19 @@ package dronewar.server.protocol;
 
 import choke3d.math.Vec2f;
 import choke3d.math.Vec3f;
-import choke3d.utils.BinaryFormat;
-import choke3d.utils.BinaryPackage;
+import choke3d.network.BinaryFormat;
+import choke3d.network.BinaryPackage;
 
 /**
  *
  * @author tocatoca
  */ 
 public class ControlData extends BinaryPackage { 
-    public Vec3f movement=new Vec3f();
+    public Vec2f movement=new Vec2f();
     public boolean fire=false;
     public ControlData() {
         super();
-        putField("movement", "vec3f"); 
+        putField("movement", "vec2f"); 
         putField("fire", "boolean"); 
     } 
     @Override
@@ -24,7 +24,7 @@ public class ControlData extends BinaryPackage {
     }
     @Override
     public void unserialize() {
-        movement=getVec3f("movement");
+        movement=getVec2f("movement");
         fire=getBool("fire");
     }
 }

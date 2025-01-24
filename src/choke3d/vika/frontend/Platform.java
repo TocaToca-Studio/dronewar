@@ -25,4 +25,9 @@ public abstract class Platform {
         return m;
     }
     public abstract Vec2i get_window_size();
+    
+    public abstract void draw_object(DrawObject obj,Camera camera);
+    public abstract void set_skybox_texture(Texture sky);
+    public abstract void clear_camera(Camera camera); 
+   
 }

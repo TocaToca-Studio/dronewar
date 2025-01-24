@@ -214,4 +214,8 @@ public class Vec3f {
     public static Vec3f unpack(ByteBuffer buff) {
         return new Vec3f(buff.getFloat(),buff.getFloat(),buff.getFloat());
     }
+
+    public Vec3f cross(Vec3f b) {
+     return Vec3f.cross(this, b);
+    }
 }

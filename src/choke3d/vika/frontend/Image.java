@@ -10,4 +10,5 @@ public interface Image {
     public int getWidth();
     public int getHeight();
     public Color4f getPixelColor(int x,int y); 
+    public void setPixelColor(int x,int y,Color4f color); 
 }

@@ -1,14 +1,12 @@
 package choke3d.vika.frontend;
-
-import choke3d.vika.frontend.mesh.Mesh;
-import java.util.ArrayList;
+ 
 import java.util.HashSet;
 
 /**
  *
  * @author tocatoca
  */
-public abstract class Scene {
+public class Scene {
     protected final HashSet<Camera> cameras=new HashSet<>();
     public void add_camera(Camera camera) { cameras.add(camera); }
     public void remove_camera(Camera camera) { cameras.remove(camera);   }
@@ -17,19 +15,14 @@ public abstract class Scene {
     public void add_object(DrawObject obj) { objects.add(obj); }
     public void remove_obj(DrawObject obj) { objects.remove(obj);   }
     
-    protected abstract void clear_camera(Camera camera,int win_width,int win_height); 
-    public abstract void init();
-    public abstract void draw_object(DrawObject obj);
-    public abstract void set_skybox_texture(Texture sky);
-    public void render(int win_width,int win_height) {
+    public void init() {}
+    public void destroy() {} 
+
+    public void render(Platform platform) {
         for(Camera camera : cameras) {
-            clear_camera(camera,win_width,win_height);
+            platform.clear_camera(camera);
             for(DrawObject obj : objects) {
-                draw_object(obj);
-            }
-            
-        }
-      
-    }
-    public abstract void destroy();
-}
+                platform.draw_object(obj,camera);
+            } 
+        } 
+    }}

@@ -6,6 +6,7 @@ import choke3d.math.Vec3f;
 import dronewar.server.protocol.ControlData;
 import java.util.ArrayList;
 import java.util.HashMap; 
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -50,6 +51,17 @@ public class Room {
         drones.remove(player);
     }
     public void init() {
+        Random random = new Random(); 
+        // adiciona bots 
+        for(int c=0;c<100;c++) {
+            Player bot=register_player("bot-"+c,"bot-"+c);
+            Drone drone=drones.get(bot.id);
+            drone.position.x=random.nextInt(-100, 100);
+            drone.position.z=random.nextInt(-100, 100); 
+            drone.position.y=random.nextInt(20, 60); 
+            
+            drone.rotation.rotate(random.nextFloat(0, (float) (2.0f*Math.PI)), Vec3f.UP()); 
+        }
         
     }
     public void update(double delta) {
@@ -60,9 +72,9 @@ public class Room {
             if(drone!=null) {
                 ControlData control=player_controls.get(player_id);
                 Quat rotation=new Quat();
-                rotation.rotate((float) (-delta*control.movement.z), new Vec3f(1,0,0));
-                rotation.rotate((float) (delta*control.movement.y), new Vec3f(0,1,0));
-                rotation.rotate((float) (delta*control.movement.x), new Vec3f(0,0,1));
+                rotation.rotate((float) (-delta*control.movement.y), new Vec3f(1,0,0));
+                rotation.rotate((float) (delta*control.movement.x), new Vec3f(0,1,0));
+               // rotation.rotate((float) (delta*control.movement.x), new Vec3f(0,0,1));
                 drone.rotation= rotation.multiply(drone.rotation);
                 if(control.fire && drone.canFire()) {
                     System.out.println("ATIRANDO");
@@ -70,7 +82,7 @@ public class Room {
                     bullet.position=drone.position.copy();
                     bullet.player=player_id;
                     bullet.velocity=
-                            Mat4f.IDENTITY().translated(Vec3f.FORWARD().mul(50))
+                            Mat4f.IDENTITY().translated(Vec3f.FORWARD().mul(10))
                                     .rotated(drone.rotation)
                                     .normalized_translation();
                     
