@@ -12,4 +12,7 @@ public interface Sphere {
     default boolean collideWith(Sphere other) { 
         return Vec3f.distance(other.getPosition(),getPosition())<(getRadius()+other.getRadius());
     }
+    default float getDiameter() {
+        return getRadius()*2;
+    }
 }

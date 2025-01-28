@@ -33,11 +33,11 @@ public class DroneCamera extends FPSCamera {
         if(target!=null) { 
             Vec3f target_pos=target.position.copy();
             target_pos=target_pos.add(
-             Mat4f.IDENTITY().translated(Vec3f.BACK()).rotated(target.rotation).translation().mul(20)
+             Mat4f.IDENTITY().translated(Vec3f.BACK()).rotated(target.get_rotation()).translation().mul(20)
             );
             target_pos.y+=yoffset ;//+ target.getRadius()
             transform.position=Vec3f.lerp(transform.position, target_pos, delta*5); 
-            transform.rotation=target.rotation;
+            transform.rotation=target.get_rotation();
         }
         setViewMatrix(transform.viewMatrix()); 
         

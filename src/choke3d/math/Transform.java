@@ -39,10 +39,14 @@ public class Transform {
 
     // Generate transformation matrix
     public Mat4f matrix() {
-        return Mat4f.IDENTITY()
-                    .scaled(scale)
-                    .rotated(rotation)
-                    .translated(position.x, position.y, position.z);
+        return matrix(scale,rotation,position);
+    }
+    public static Mat4f matrix(Vec3f scale,Quat rotation, Vec3f position) {
+        Mat4f mat=Mat4f.IDENTITY();
+        if(scale!=null) mat=mat.scaled(scale);
+        if(rotation!=null) mat=mat.rotated(rotation);
+        if(position!=null) mat=mat.translated(position);
+        return mat;
     }
 
     // Generate view matrix

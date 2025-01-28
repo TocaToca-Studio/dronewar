@@ -39,6 +39,7 @@ public class Room {
         Drone drone=new Drone();
         drone.player=id;
         drones.put(id,drone);  
+        players.put(new_player.id, new_player);
         return new_player;
     }
     public int get_player_id(String connection) throws Exception {
@@ -59,8 +60,9 @@ public class Room {
             drone.position.x=random.nextInt(-100, 100);
             drone.position.z=random.nextInt(-100, 100); 
             drone.position.y=random.nextInt(20, 60); 
+            drone.angles.x=(float) (2.0f*Math.PI);
+            drone.angles.y=(float) (2.0f*Math.PI);
             
-            drone.rotation.rotate(random.nextFloat(0, (float) (2.0f*Math.PI)), Vec3f.UP()); 
         }
         
     }
@@ -72,10 +74,9 @@ public class Room {
             if(drone!=null) {
                 ControlData control=player_controls.get(player_id);
                 Quat rotation=new Quat();
-                rotation.rotate((float) (-delta*control.movement.y), new Vec3f(1,0,0));
-                rotation.rotate((float) (delta*control.movement.x), new Vec3f(0,1,0));
-               // rotation.rotate((float) (delta*control.movement.x), new Vec3f(0,0,1));
-                drone.rotation= rotation.multiply(drone.rotation);
+                drone.angles.y+=(delta*control.movement.y);
+                drone.angles.x+=(-delta*control.movement.x); 
+              
                 if(control.fire && drone.canFire()) {
                     System.out.println("ATIRANDO");
                     Bullet bullet= new Bullet();
@@ -83,7 +84,7 @@ public class Room {
                     bullet.player=player_id;
                     bullet.velocity=
                             Mat4f.IDENTITY().translated(Vec3f.FORWARD().mul(10))
-                                    .rotated(drone.rotation)
+                                    .rotated(drone.get_rotation())
                                     .normalized_translation();
                     
                     bullets.add(bullet);
@@ -91,9 +92,13 @@ public class Room {
                 }
             }            
         }
+         
         for(Drone drone : drones.values()) {
-            drone.update(delta);
             
+           /* for(Drone other : drones.values()) {
+                if(other!=drone) drone.velocity-=drone.velocity;
+            }*/
+            drone.update(delta);
             
             if(!drone.collideWith(safezone)) {
                 drone.energy-=delta*safezone.damage;
@@ -115,6 +120,7 @@ public class Room {
             }
         }
          
+        
         hits.forEach((bullet, drone) -> {
             drone.energy-=bullet.energy;
             if(drone.energy<=0) { 
@@ -122,7 +128,7 @@ public class Room {
                 players.get(bullet.player).score++;
             }
         });
-        //bullets.removeAll(dead_bullets); 
+        bullets.removeAll(dead_bullets); 
         bullets.removeAll(hits.keySet());
     }
     public void destroy() {

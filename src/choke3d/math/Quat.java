@@ -122,4 +122,59 @@ public class Quat {
         float axisZ = z / scale;
         return new Vec4f(axisX,axisY,axisZ,angle);
     }
+    public static Quat lookAt(Vec3f dir) {
+        // Normaliza o vetor direção
+        dir=dir.normalized();  // Garantir que o vetor direção tenha magnitude 1
+
+        // Calcula o vetor cruzado entre o vetor FORWARD e o vetor direção
+        Vec3f cross = Vec3f.FORWARD().cross(dir);
+
+        // Se o vetor cruzado for zero, significa que os vetores são colineares
+        if (cross.magnitude() == 0) {
+            // Se os vetores são colineares (caso especial), o quaternion seria identidade ou rotacionado de 180°
+            // Dependendo da situação, você pode escolher rotacionar 180° ou devolver o quaternion identidade.
+            return new Quat(1f, 0f, 0f, 0f);  // Quaternion identidade
+        }
+
+        // Calcula o produto escalar entre os vetores
+        float dot = Vec3f.dot(Vec3f.FORWARD(), dir);
+
+        // Clampe o valor do produto escalar para evitar erro no acos
+        dot = Math.max(-1.0f, Math.min(1.0f, dot));
+
+        // Calcula o ângulo entre os vetores
+        float angle = (float) Math.acos(dot);  // ângulo entre os vetores
+
+        // Retorna o quaternion que representa a rotação
+        return new Quat(angle, cross.x, cross.y, cross.z);
+    }
+    public static Quat lookAtWithYLock(Vec3f dir) {
+        // Normaliza o vetor direção
+        dir=dir.normalized();
+
+        // Calcula a direção no plano XY (trava a rotação ao longo do eixo Y)
+        Vec3f dirXY = new Vec3f(dir.x, 0, dir.z);
+        dirXY=dirXY.normalized();
+
+        // Calcula o vetor cruzado entre o vetor FORWARD e o vetor direção no plano XY
+        Vec3f cross = Vec3f.FORWARD().cross(dirXY);
+
+        // Se o vetor cruzado for zero, significa que os vetores são colineares
+        if (cross.magnitude() == 0) {
+            // Caso especial quando os vetores são colineares, o quaternion seria identidade
+            return new Quat(1f, 0f, 0f, 0f);  // Quaternion identidade
+        }
+
+        // Calcula o produto escalar entre os vetores
+        float dot = Vec3f.dot(Vec3f.FORWARD(), dirXY);
+
+        // Clampe o valor do produto escalar para evitar erro no acos
+        dot = Math.max(-1.0f, Math.min(1.0f, dot));
+
+        // Calcula o ângulo entre os vetores
+        float angle = (float) Math.acos(dot);
+
+        // Retorna o quaternion que representa a rotação
+        return new Quat(angle, cross.x, cross.y, cross.z);
+    }
 }

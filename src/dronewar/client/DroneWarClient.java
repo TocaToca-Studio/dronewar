@@ -5,6 +5,9 @@ import choke3d.math.Transform;
 import choke3d.math.Vec2i; 
 import choke3d.math.Vec3f;
 import choke3d.FPSCamera;
+import choke3d.math.Color4f;
+import choke3d.math.Quat;
+import choke3d.math.Vec2f;
 import choke3d.mesh.Heightmap;
 import choke3d.mesh.OBJParser;
 import choke3d.vika.backend.JavaImageWraper;
@@ -15,10 +18,11 @@ import choke3d.vika.frontend.Input;
 import choke3d.vika.frontend.Texture;
 import choke3d.vika.frontend.mesh.Mesh;
 import choke3d.vikaTest; 
-import dronewar.gui.HUD;
+import dronewar.client.gui.HUD;
 import dronewar.server.game.Bullet;
 import dronewar.server.game.Drone;
 import dronewar.server.game.Player;
+import dronewar.server.game.Safezone;
 import dronewar.server.protocol.ControlData;
 import dronewar.server.protocol.GeneralUpdateData;  
 import java.io.IOException;
@@ -27,6 +31,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;  
+import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.GL_LINES;
 /**
  *
  * @author tocatoca
@@ -65,8 +74,10 @@ public class DroneWarClient extends LegacyPlatform {
     }
     public DrawObject drone_obj=null;
     public DrawObject bullet_obj=null;
+    public DrawObject safezone_obj=null;
     
     public DrawObject cube_obj=null;
+    public DrawObject quad_obj=null;
     public DrawObject terrain_obj=null;
     public HUD hud=new HUD();
     double t=0;
@@ -99,20 +110,28 @@ public class DroneWarClient extends LegacyPlatform {
         cube_obj.material.albedo_color.r=(float) Math.sin(t);
         draw_object(cube_obj,camera);
         draw_object(terrain_obj,camera);
+        draw_safezone(last_update.safezone);
         if(camera.target!=null) {
             hud.draw(this, camera.target);
         }
+        
     } 
     
     @Override
     public void init() {
         super.init(); 
         hud.init(this);
-        Mesh cube=create_mesh(); 
+        Mesh cube=create_mesh();
         cube.load(Mesh.get_cube());
+        Mesh quad=create_mesh();
+        quad.load(Mesh.get_quad());
+        quad_obj=new DrawObject(quad);
+        Mesh sphere=load_obj("assets/sphere.obj");
         cube_obj=new DrawObject(cube); 
-        drone_obj=new DrawObject(load_obj("assets/drone.obj"));
-        bullet_obj=new DrawObject(cube); 
+        drone_obj=new DrawObject(load_obj("assets/drone.obj")); 
+        Mesh bullet=load_obj("assets/bullet.obj");
+        bullet_obj=new DrawObject(bullet); 
+        safezone_obj=new DrawObject(sphere); 
         
            
         Heightmap terrain=new Heightmap(128,128);
@@ -185,20 +204,60 @@ public class DroneWarClient extends LegacyPlatform {
         //(new DroneWarClient()).run();
     }
     */
+    private void draw_lifebar(Drone d) {
+        float rad=d.getRadius();
+        Transform t=new Transform();
+        
+        t.position=d.position.copy();
+        t.position.y+=rad+(rad/2); 
+        
+        t.scale=new Vec3f(5,1,1);
+        t.rotation=Quat.IDENTITY();
+        Vec3f campos=camera.transform.position.copy();
+        campos.y=0;
+        Vec3f dpos=d.position.copy(); 
+        dpos.y=0;
+        
+        // Calcula o produto escalar entre os vetores UP e dir
+        float dot = Vec3f.dot(Vec3f.FORWARD(), campos.subtract(dpos).normalized());
+        //dot = Math.max(-1.0f, Math.min(1.0f, dot));  // Clampa o valor do dot para garantir que esteja no intervalo [-1, 1]
 
+        // Calcula o ângulo entre os vetores
+        float angle = (float) Math.acos(dot);
+ 
+
+        // Aplica a rotação
+        t.rotation.rotate(angle, Vec3f.UP());
+        
+        quad_obj.model=t.matrix();
+        quad_obj.material.albedo_color=Color4f.WHITE();
+        draw_object(quad_obj,camera);
+    }
     private void draw_drone(Drone d) {
         Transform transform=new Transform();
         transform.position=d.position;
-        transform.rotation=d.rotation;
-        transform.scale=new Vec3f(1,1,1).mul(d.getRadius());
+        transform.rotation=d.get_rotation();
+        transform.scale=new Vec3f(1,1,1).mul(d.getDiameter());
         drone_obj.model=transform.matrix();
         drone_obj.material.albedo_color=d.get_color();
+        GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         draw_object(drone_obj,camera);
+        GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        draw_lifebar(d);
+    }
+    private void draw_safezone(Safezone d) {
+        Transform transform=new Transform();
+        transform.position=d.position; 
+        transform.scale=new Vec3f(1,1,1).mul(d.getDiameter());
+        safezone_obj.model=transform.matrix();
+        GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        draw_object(safezone_obj,camera);
+        GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
     private void draw_bullet(Bullet d) {
         Transform transform=new Transform();
         transform.position=d.position; 
-        transform.scale=new Vec3f(1,1,1).mul(d.getRadius());
+        transform.scale=new Vec3f(1,1,1).mul(d.getDiameter());
         bullet_obj.model=transform.matrix();
         draw_object(bullet_obj,camera);
     }

@@ -13,12 +13,9 @@ import choke3d.vika.frontend.Platform;
 import choke3d.vika.frontend.Scene;
 import choke3d.vika.frontend.Texture;
 import choke3d.vika.frontend.mesh.Mesh;
-import java.nio.FloatBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.FloatBuffer; 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.LWJGLException; 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -81,6 +78,7 @@ public class LegacyPlatform extends Platform {
         skybox.material.albedo_color.r=0.5f;
         skybox.material.albedo_color.g=0.5f;
         initFog();
+        
     } 
      private static void initFog() {
         glEnable(GL_FOG); // Habilita o fog
@@ -133,8 +131,6 @@ public class LegacyPlatform extends Platform {
         //GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL_LINE);
         ((LegacyMesh) obj.mesh).draw();
         glPopMatrix();
-        glEnable(GL11.GL_TEXTURE);
-        glEnable(GL_TEXTURE_2D);
     }
 
     @Override
@@ -148,9 +144,11 @@ public class LegacyPlatform extends Platform {
         Vec2f pos = camera.viewport.position.mul(winSize);
         Vec2f size = camera.viewport.scale.mul(winSize);
         glViewport((int) pos.x, (int) pos.y, (int) size.x, (int) size.y);
-        Color4f clearColor=camera.clearColor;
+        Color4f clearColor=camera.clearColor; 
         glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
 
+        glEnable(GL11.GL_TEXTURE);
+        glEnable(GL_TEXTURE_2D);
         //glEnable(GL_ALPHA);
         //glEnable(GL_BLEND);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

@@ -22,7 +22,7 @@ public class Bullet extends BinaryPackage implements Sphere {
 
     @Override
     public float getRadius() {
-        return 2;//energy/10f;
+        return 1f;//energy/10f;
     }
 
     @Override

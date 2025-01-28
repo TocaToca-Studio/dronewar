@@ -64,6 +64,7 @@ public class LegacyInput extends Input {
     public Vec2f getAxis() {
         Vec2f ax=super.getAxis();
         if(Math.abs(ax.x) > 0.1f || Math.abs(ax.y) > 0.1f )  return ax;
+        if(joystick==null) return ax;
         return new Vec2f(-joystick.getAxisValue(0),-joystick.getAxisValue(1));
     }
     @Override

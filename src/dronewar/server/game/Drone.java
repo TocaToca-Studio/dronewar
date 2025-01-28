@@ -3,6 +3,7 @@ package dronewar.server.game;
 import choke3d.math.Color4f;
 import choke3d.math.Mat4f;
 import choke3d.math.Quat;
+import choke3d.math.Vec2f;
 import choke3d.math.Vec3f;
 import choke3d.network.BinaryPackage;
 import java.util.Random;
@@ -13,23 +14,30 @@ import java.util.Random;
  */
 public class Drone extends BinaryPackage implements Sphere {
     public Vec3f position=new Vec3f(0,10,0);
-    public Quat rotation=new Quat();
+    public Vec2f angles=new Vec2f();
     public float energy=100;
-    public float velocity=1f;
+    public float velocity=2f;
     public int player=0;
     final float FIRERATE=1f/2f; // dois tiros por segundo
     public float fire_timeout=0.1f;
     
+    public Quat get_rotation() {
+        Quat rot=Quat.IDENTITY();
+        rot.rotate(angles.y, new Vec3f(1f, 0, 0));
+        rot.rotate(angles.x, new Vec3f(0f,1f,0));
+        return rot;
+    }
     
     @Override
     public float getRadius() {
-        return 5;//energy/50f;
+        return 2.5f;//energy/50f;
     } 
+   
     void update(double delta) {
         if(fire_timeout>0) fire_timeout-=delta;
         Vec3f direction=
                 Mat4f.IDENTITY().translated(Vec3f.FORWARD())
-                        .rotated(rotation).translation();
+                        .rotated(get_rotation()).translation();
         position=position.add(
             direction.normalized().mul(velocity*(float)delta)
         );
@@ -44,7 +52,7 @@ public class Drone extends BinaryPackage implements Sphere {
     public Drone() {
         super();  
         putField("position","vec3f");   
-        putField("rotation","quat");  
+        putField("angles","vec2f");  
         putField("velocity","float");   
         putField("energy","float");   
         putField("fire_timeout","float");   
@@ -54,7 +62,7 @@ public class Drone extends BinaryPackage implements Sphere {
     @Override
     public void serialize() { 
         putValue("position",position);   
-        putValue("rotation",rotation);  
+        putValue("angles",angles);  
         putValue("energy",energy);   
         putValue("fire_timeout",fire_timeout);   
         putValue("velocity",velocity);   
@@ -63,7 +71,7 @@ public class Drone extends BinaryPackage implements Sphere {
     @Override
     public void unserialize() {
         position=getVec3f("position");   
-        rotation=getQuat("rotation");  
+        angles=getVec2f("angles");  
         energy=getFloat("energy");    
         fire_timeout=getFloat("fire_timeout");    
         velocity=getFloat("velocity");   

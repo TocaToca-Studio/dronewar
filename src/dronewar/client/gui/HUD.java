@@ -1,4 +1,4 @@
-package dronewar.gui;
+package dronewar.client.gui;
 
 import choke3d.math.Color4f;
 import choke3d.math.Mat4f;
@@ -33,7 +33,7 @@ public class HUD {
             text.load(
                     new JavaImageWraper(
                             ImageIO.read(
-                                    this.getClass().getResourceAsStream("../assets/ascii.png")
+                                    this.getClass().getResourceAsStream("../../assets/ascii.png")
                             )
                     )
             );
@@ -90,16 +90,16 @@ public class HUD {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // Exibe texto para a energia do jogador
-        //drawBar(80, 200, 100, 10, drone.energy / 100.0f); // Barra de energia
-        drawShadowedText("Energy:", 10, 200, 16,Color4f.WHITE());
-       
         // Exibe texto para a posição do jogador
         drawShadowedText(String.format("Position: (%.1f, %.1f, %.1f)", 
-        drone.position.x, drone.position.y, drone.position.z), 10, 180, 16,Color4f.WHITE());
+        drone.position.x, drone.position.y, drone.position.z), 10, 10, 16,Color4f.WHITE());
 
+        // Exibe texto para a energia do jogador
+        //drawBar(80, 200, 100, 10, drone.energy / 100.0f); // Barra de energia
+        drawShadowedText("Energy: "+ drone.energy, 10, 10+20, 16,Color4f.WHITE());
+       
         // Exibe texto para a velocidade do jogador
-        drawShadowedText(String.format("Velocity: %.1f", drone.velocity), 10, 160, 16,Color4f.WHITE());
+        drawShadowedText(String.format("Velocity: %.1f", drone.velocity), 10, 10+40, 16,Color4f.WHITE());
 
         // Desabilita texturas e blending
         glDisable(GL_TEXTURE_2D);
