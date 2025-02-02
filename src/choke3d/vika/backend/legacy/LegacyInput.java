@@ -77,8 +77,10 @@ public class LegacyInput extends Input {
         // Verifica estado do joystick
         if (joystick != null && joystickButtonMap.containsKey(key)) {
             int buttonIndex = joystickButtonMap.get(key);
-            if (joystick.isButtonPressed(buttonIndex)) {
-                return KEY_PRESSING;
+            if(buttonIndex < joystick.getButtonCount()){
+                if (joystick.isButtonPressed(buttonIndex)) {
+                    return KEY_PRESSING;
+                }
             }
         }
 

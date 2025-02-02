@@ -205,33 +205,31 @@ public class DroneWarClient extends LegacyPlatform {
     }
     */
     private void draw_lifebar(Drone d) {
-        float rad=d.getRadius();
-        Transform t=new Transform();
-        
-        t.position=d.position.copy();
-        t.position.y+=rad+(rad/2); 
-        
-        t.scale=new Vec3f(5,1,1);
-        t.rotation=Quat.IDENTITY();
-        Vec3f campos=camera.transform.position.copy();
-        campos.y=0;
-        Vec3f dpos=d.position.copy(); 
-        dpos.y=0;
-        
-        // Calcula o produto escalar entre os vetores UP e dir
-        float dot = Vec3f.dot(Vec3f.FORWARD(), campos.subtract(dpos).normalized());
-        //dot = Math.max(-1.0f, Math.min(1.0f, dot));  // Clampa o valor do dot para garantir que esteja no intervalo [-1, 1]
+        float rad = d.getRadius();
+        Transform t = new Transform();
 
-        // Calcula o ângulo entre os vetores
-        float angle = (float) Math.acos(dot);
- 
+        // Posiciona a barra acima do drone
+        t.position = d.position.copy();
+        t.position.y += rad + (rad / 2); 
 
-        // Aplica a rotação
-        t.rotation.rotate(angle, Vec3f.UP());
+        t.scale = new Vec3f(5, 1, 1);
+
+        // Vetor da câmera para o drone (direção inversa)
+        Vec3f toDrone = d.position.copy().subtract(camera.transform.position);
+        toDrone.y = 0; // Ignora componente vertical
+        toDrone=toDrone.normalized();
+
+        // Calcula o ângulo usando atan2 para obter a orientação correta em 360°
+        float angle = (float) Math.atan2(toDrone.z, toDrone.x);
+
+        // Aplica a rotação em torno do eixo Y
         
-        quad_obj.model=t.matrix();
-        quad_obj.material.albedo_color=Color4f.WHITE();
-        draw_object(quad_obj,camera);
+        t.rotation.rotate((float) (angle+ Math.toRadians(90)), Vec3f.UP());
+         
+
+        quad_obj.model = t.matrix();
+        quad_obj.material.albedo_color = Color4f.WHITE();
+        draw_object(quad_obj, camera);
     }
     private void draw_drone(Drone d) {
         Transform transform=new Transform();
@@ -240,7 +238,7 @@ public class DroneWarClient extends LegacyPlatform {
         transform.scale=new Vec3f(1,1,1).mul(d.getDiameter());
         drone_obj.model=transform.matrix();
         drone_obj.material.albedo_color=d.get_color();
-        GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         draw_object(drone_obj,camera);
         GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         draw_lifebar(d);

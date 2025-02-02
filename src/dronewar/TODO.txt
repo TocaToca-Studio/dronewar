@@ -1,0 +1,35 @@
+-- interface
++ minimapa
++ lista de players
++ menu
+--- gameplay
++ barra de vida em cima das naves
++ modelos 3d mais bonitas, naves de 2 cores.
++ efeitos de particula, fogo e explosões.
++ ajustes de jogabilidade, mecanica e controles.
++ tiro teleguiado
++ efeitos0 sonoros estéreo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
