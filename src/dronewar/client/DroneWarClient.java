@@ -33,10 +33,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;  
 import org.lwjgl.opengl.GL11;
+import static org.lwjgl.opengl.GL11.GL_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.glEnable;
 /**
  *
  * @author tocatoca
@@ -85,8 +87,11 @@ public class DroneWarClient extends LegacyPlatform {
     double t=0;
     @Override
     public void update() {
+        
         t+=get_delta();
         super.update(); 
+        
+        
         //Display.setTitle(player.name); 
         if(camera.follow_drone) {
             client_control.movement=get_input().getAxis();
@@ -95,6 +100,12 @@ public class DroneWarClient extends LegacyPlatform {
         Vec2i win_size=get_window_size();
         camera.update(this); 
         clear_camera(camera);
+        
+        //cube_obj.material.albedo_color.r=(float) Math.sin(t);
+       // draw_object(cube_obj,camera);
+        draw_object(terrain_obj,camera);
+        draw_safezone(last_update.safezone);
+        
          synchronized(last_update.drones) {
             for(Drone d : last_update.drones) {
                 if(d.player==player.id) {  
@@ -109,10 +120,14 @@ public class DroneWarClient extends LegacyPlatform {
             }
         }
         
-        //cube_obj.material.albedo_color.r=(float) Math.sin(t);
-       // draw_object(cube_obj,camera);
-        draw_object(terrain_obj,camera);
-        draw_safezone(last_update.safezone);
+         synchronized(last_update.drones) {
+            for(Drone d : last_update.drones) {
+                if(d.player==player.id) {  
+                   camera.target=d; 
+                }
+                draw_helices(d);
+            }
+        }
         if(camera.target!=null) {
             hud.draw(this, camera.target);
         }
@@ -134,7 +149,8 @@ public class DroneWarClient extends LegacyPlatform {
         
         Mesh sphere=load_obj("sphere.obj");
         cube_obj=new DrawObject(cube); 
-        drone_obj=new DrawObject(load_obj("drone.obj")); 
+        //drone_obj=new DrawObject(load_obj("drone.obj")); 
+        drone_obj=new DrawObject(load_obj("sphere.obj")); 
         Mesh bullet=load_obj("bullet.obj");
         bullet_obj=new DrawObject(bullet); 
         safezone_obj=new DrawObject(sphere); 
@@ -210,6 +226,8 @@ public class DroneWarClient extends LegacyPlatform {
     }
     */
     private void draw_lifebar(Drone d) {
+        float life=(d.energy/100f);
+        if(life >0.95) return;
         float rad = d.getRadius();
         Transform t = new Transform();
 
@@ -236,27 +254,12 @@ public class DroneWarClient extends LegacyPlatform {
         cube_obj.material.albedo_color = Color4f.WHITE();
         draw_object(cube_obj, camera);
         
-        t.scale=new Vec3f(4.8f*(d.energy/100f),0.8f,0.2f);
+        t.scale=new Vec3f(4.8f*life,0.8f,0.2f);
         cube_obj.model=t.matrix();
         cube_obj.material.albedo_color = Color4f.RED();
         draw_object(cube_obj, camera);
     }
-    private void draw_helice(Drone d) {
-        float rad = d.getRadius();
-        Transform t = new Transform();
-
-        // Posiciona a barra acima do drone
-        t.position = d.position.copy();
-        t.position.y += rad + (rad / 2); 
-
-        t.scale = new Vec3f(1, 1, 1f);
-
-        //t.rotation.rotate((float) (angle+ Math.toRadians(90)), Vec3f.UP());
-        
-        quad_obj.model = t.matrix();
-        quad_obj.material.albedo_color = Color4f.WHITE();
-        draw_object(cube_obj, camera); 
-    }
+    float r=0; 
     private void draw_drone(Drone d) {
         Transform transform=new Transform();
         transform.position=d.position;
@@ -267,7 +270,41 @@ public class DroneWarClient extends LegacyPlatform {
         //GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         draw_object(drone_obj,camera);
         GL11.glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+         
         draw_lifebar(d);
+    }
+    
+    private void draw_helices(Drone d) {
+        Transform tdrone=new Transform();
+        tdrone.position=d.position;
+        tdrone.rotation=d.get_rotation();
+        tdrone.scale=new Vec3f(1,1,1).mul(d.getDiameter()); 
+        
+        float rad = d.getRadius();
+        Transform t1 = new Transform();
+        Transform t2 = new Transform(); 
+        t1.rotation.rotate((float) Math.toRadians(90), Vec3f.LEFT());
+        
+        t1.rotation.rotate((float) -Math.toRadians(35)*(d.velocity.z/Drone.MAX_VELOCITY), Vec3f.LEFT());
+        
+        float steer=(float) -Math.toRadians(35)*(d.angular_velocity/Drone.MAX_ANG_VELOCITY);
+                
+        r+=time.getDelta()/5.0f;
+        t2.scale=t2.scale.mul(0.7f);
+        t2.rotation.rotate(r, Vec3f.BACK());
+        
+        Quat t1rot=t1.rotation.copy();
+        t1.position.x=1;
+        
+        t1.rotation.rotate(steer, Vec3f.LEFT());
+        helice_obj.model = tdrone.matrix().mul(t1.matrix()).mul(t2.matrix());
+        draw_object(helice_obj, camera); 
+        t1.rotation=t1rot;
+        
+        t1.rotation.rotate(-steer, Vec3f.LEFT());
+        t1.position.x=-1;
+        helice_obj.model = tdrone.matrix().mul(t1.matrix()).mul(t2.matrix());
+        draw_object(helice_obj, camera); 
     }
     private void draw_safezone(Safezone d) {
         Transform transform=new Transform();

@@ -75,10 +75,12 @@ public class Room {
             if(drone!=null) {
                 ControlData control=player_controls.get(player_id);
                 Quat rotation=new Quat();
-                drone.angle+=(delta*-control.movement.x);
+                //drone.angle+=(delta*-control.movement.x);
+                drone.angular_velocity=MathUtils.LERP(drone.angular_velocity,control.movement.x*Drone.MAX_ANG_VELOCITY, (float) (delta*2));
+                
                 drone.velocity.z=MathUtils.LERP(drone.velocity.z,control.movement.y*Drone.MAX_VELOCITY, (float) (delta*0.5f));
                 //drone.velocity.
-                //drone.angles.x+=(-delta*control.movement.x); 
+                drone.angle+=(-delta*drone.angular_velocity); 
               
                 if(control.fire && drone.canFire()) {
                     System.out.println("ATIRANDO");
@@ -86,7 +88,7 @@ public class Room {
                     bullet.position=drone.position.copy();
                     bullet.player=player_id;
                     bullet.velocity=
-                            Mat4f.IDENTITY().translated(Vec3f.FORWARD().mul(10))
+                            Mat4f.IDENTITY().translated(Vec3f.FORWARD().mul(30))
                                     .rotated(drone.get_rotation())
                                     .normalized_translation();
                     

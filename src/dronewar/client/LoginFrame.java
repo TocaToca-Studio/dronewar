@@ -9,6 +9,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +30,18 @@ public class LoginFrame extends JFrame {
         String ip = ipField.getText();
         String nick = nickField.getText();
 
+        if(ip.equals("127.0.0.1")) {
+
+            (new Thread(()->{
+                Server server=new Server();
+                server.run();
+            })).start();
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(LoginFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         // Aqui você pode adicionar o código para conectar ao servidor com o nick e senha
         System.out.println("Tentando login com o IP: " + ip + " e Nick: " + nick);
         if(client.packetHandler.connect(nick, ip, 25532)) {
@@ -112,10 +126,6 @@ public class LoginFrame extends JFrame {
         setVisible(true);
     }
     public static void main(String[] args) {
-        (new Thread(()->{
-            Server server=new Server();
-            server.run();
-        })).start();
         (new LoginFrame()).setVisible(true);
     }
 }

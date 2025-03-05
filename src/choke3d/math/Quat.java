@@ -24,7 +24,7 @@ public class Quat {
 
     public static Quat IDENTITY() {
         return new Quat(1, 0, 0, 0);
-    }
+    } 
 
     // Set quaternion from Euler angles (in radians)
     public void setEuler(Vec3f euler) {
@@ -178,7 +178,7 @@ public class Quat {
         return new Quat(angle, cross.x, cross.y, cross.z);
     }
 
-    Quat copy() {
+    public Quat copy() {
         return new Quat(w,x,y,z);
     }
 }
