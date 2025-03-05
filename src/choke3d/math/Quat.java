@@ -177,4 +177,8 @@ public class Quat {
         // Retorna o quaternion que representa a rotação
         return new Quat(angle, cross.x, cross.y, cross.z);
     }
+
+    Quat copy() {
+        return new Quat(w,x,y,z);
+    }
 }

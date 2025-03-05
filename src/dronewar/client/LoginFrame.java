@@ -22,6 +22,22 @@ import javax.swing.JTextField;
  * @author tocatoca
  */
 public class LoginFrame extends JFrame { 
+    JTextField ipField;
+    JTextField nickField;
+    public void conectar() {
+        String ip = ipField.getText();
+        String nick = nickField.getText();
+
+        // Aqui você pode adicionar o código para conectar ao servidor com o nick e senha
+        System.out.println("Tentando login com o IP: " + ip + " e Nick: " + nick);
+        if(client.packetHandler.connect(nick, ip, 25532)) {
+            //JOptionPane.showMessageDialog(this,"Conectado!");
+            setVisible(false);
+            client.run();
+        } else {
+            JOptionPane.showMessageDialog(this, "Erro ao conectar!", "ERRO", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     DroneWarClient client=new DroneWarClient();
     LoginFrame() {
         super("Tela de login");
@@ -44,14 +60,14 @@ public class LoginFrame extends JFrame {
         // Criando o campo para a senha
         JLabel ipLabel = new JLabel("IP do Servidor:");
         ipLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        JTextField ipField = new JTextField(255);
+        ipField = new JTextField(255);
         ipField.setFont(new Font("Arial", Font.PLAIN, 14));
         ipField.setText("127.0.0.1");
 
         // Criando o campo para o nome (nick)
         JLabel nickLabel = new JLabel("Nick:");
         nickLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        JTextField nickField = new JTextField(20);
+        nickField = new JTextField(20);
         nickField.setFont(new Font("Arial", Font.PLAIN, 14));
         nickField.setText("Choke");
 
@@ -89,20 +105,9 @@ public class LoginFrame extends JFrame {
 
         // Definindo a ação do botão
         loginButton.addActionListener((ActionEvent e) -> {
-            String ip = ipField.getText();
-            String nick = nickField.getText();
-            
-            // Aqui você pode adicionar o código para conectar ao servidor com o nick e senha
-            System.out.println("Tentando login com o IP: " + ip + " e Nick: " + nick);
-            if(client.packetHandler.connect(nick, ip, 25532)) {
-                //JOptionPane.showMessageDialog(this,"Conectado!");
-                setVisible(false);
-                client.run();
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao conectar!", "ERRO", JOptionPane.ERROR_MESSAGE);
-            }
+           conectar();
         });
-
+        //conectar();
         // Tornar a janela visível
         setVisible(true);
     }

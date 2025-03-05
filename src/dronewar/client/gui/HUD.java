@@ -7,6 +7,7 @@ import choke3d.vika.backend.JavaImageWraper;
 import choke3d.vika.frontend.Camera;
 import choke3d.vika.frontend.Platform;
 import choke3d.vika.frontend.Texture;
+import dronewar.assets.DroneWarAssets;
 import dronewar.server.game.Drone;
 import dronewar.server.game.Player;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class HUD {
             text.load(
                     new JavaImageWraper(
                             ImageIO.read(
-                                    this.getClass().getResourceAsStream("../../assets/ascii.png")
+                                    DroneWarAssets.class.getResourceAsStream("ascii.png")
                             )
                     )
             );
@@ -99,7 +100,7 @@ public class HUD {
         drawShadowedText("Energy: "+ drone.energy, 10, 10+20, 16,Color4f.WHITE());
        
         // Exibe texto para a velocidade do jogador
-        drawShadowedText(String.format("Velocity: %.1f", drone.velocity), 10, 10+40, 16,Color4f.WHITE());
+        drawShadowedText(String.format("Velocity: %.1f", drone.velocity.magnitude()), 10, 10+40, 16,Color4f.WHITE());
 
         // Desabilita texturas e blending
         glDisable(GL_TEXTURE_2D);

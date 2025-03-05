@@ -2,20 +2,24 @@
 + minimapa
 + lista de players
 + menu
+
 --- gameplay
-+ barra de vida em cima das naves
++ ajustes de jogabilidade, mecanica e controles.
 + modelos 3d mais bonitas, naves de 2 cores.
 + efeitos de particula, fogo e explosões.
-+ ajustes de jogabilidade, mecanica e controles.
 + tiro teleguiado
-+ efeitos0 sonoros estéreo.
++ efeitos sonoros estéreo.
 
 
-
-
-
-
-
+------ gameplay ------
+  
+- separar helices do bloco principal da nave
+- efeitos ao girar para a esquerda o direita, as helices devem mudar de angulo. também ao acelerar e ir para tras.
+- inventar um sistema melhor de mira e tiro
+- tiros devem ir reto, porem se chegar alguma nave muito perto ele deve perseguir a nave
+- ajustar velocidade do tiro e da nave em um ponto que, a nave consiga desviar do tiro se agir rapido, mas se nao agir rapido a bala vai perseguir ele ate acerta. então é uma velocidade relativamente proxima a da nave.
+- desenhar outra nave, com mais detalhes.
+- desenhar outra munição, com mais detalhes.
 
 
 

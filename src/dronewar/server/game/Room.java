@@ -1,6 +1,7 @@
 package dronewar.server.game;
 
 import choke3d.math.Mat4f;
+import choke3d.math.MathUtils;
 import choke3d.math.Quat;
 import choke3d.math.Vec3f;
 import dronewar.server.protocol.ControlData;
@@ -60,8 +61,8 @@ public class Room {
             drone.position.x=random.nextInt(-100, 100);
             drone.position.z=random.nextInt(-100, 100); 
             drone.position.y=random.nextInt(20, 60); 
-            drone.angles.x=(float) (2.0f*Math.PI);
-            drone.angles.y=(float) (2.0f*Math.PI);
+            drone.angle=(float) (2.0f*Math.PI);
+            //drone.angles.y=(float) (2.0f*Math.PI);
             
         }
         
@@ -74,8 +75,10 @@ public class Room {
             if(drone!=null) {
                 ControlData control=player_controls.get(player_id);
                 Quat rotation=new Quat();
-                drone.angles.y+=(delta*control.movement.y);
-                drone.angles.x+=(-delta*control.movement.x); 
+                drone.angle+=(delta*-control.movement.x);
+                drone.velocity.z=MathUtils.LERP(drone.velocity.z,control.movement.y*Drone.MAX_VELOCITY, (float) (delta*0.5f));
+                //drone.velocity.
+                //drone.angles.x+=(-delta*control.movement.x); 
               
                 if(control.fire && drone.canFire()) {
                     System.out.println("ATIRANDO");

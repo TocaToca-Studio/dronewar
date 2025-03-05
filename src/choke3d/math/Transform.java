@@ -15,6 +15,13 @@ public class Transform {
         this.scale = new Vec3f(1, 1, 1);
         this.rotation = new Quat(1, 0, 0, 0);
     }
+    public Transform copy() {
+        Transform r=new Transform();
+        r.position=this.position.copy();
+        r.rotation=this.rotation.copy();
+        r.rotation2d=this.rotation2d;
+        return r;
+    }
 
     // Set angles using Euler angles
     public void setAngles(Vec3f angles) {

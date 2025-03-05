@@ -18,6 +18,7 @@ import choke3d.vika.frontend.Input;
 import choke3d.vika.frontend.Texture;
 import choke3d.vika.frontend.mesh.Mesh;
 import choke3d.vikaTest; 
+import dronewar.assets.DroneWarAssets;
 import dronewar.client.gui.HUD;
 import dronewar.server.game.Bullet;
 import dronewar.server.game.Drone;
@@ -51,16 +52,16 @@ public class DroneWarClient extends LegacyPlatform {
     public Texture load_texture(String path) {
         Texture txt=create_texture();
         try {
-            txt.load(new JavaImageWraper(ImageIO.read(vikaTest.class.getResourceAsStream(path))));
+            txt.load(new JavaImageWraper(ImageIO.read(DroneWarAssets.class.getResourceAsStream(path))));
         } catch (IOException ex) {
-            Logger.getLogger(vikaTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DroneWarAssets.class.getName()).log(Level.SEVERE, null, ex);
         }
         return txt;
     } 
     public Mesh load_obj(String path) {
         Mesh mesh=create_mesh();
         try {
-            InputStream inputStream=vikaTest.class.getResourceAsStream(path);
+            InputStream inputStream=DroneWarAssets.class.getResourceAsStream(path);
             String data=new String(inputStream.readAllBytes(), StandardCharsets.UTF_8); ;
             OBJParser.OBJFileData obj=OBJParser.parseObjFile(data, path);
             mesh.load(
@@ -78,6 +79,7 @@ public class DroneWarClient extends LegacyPlatform {
     
     public DrawObject cube_obj=null;
     public DrawObject quad_obj=null;
+    public DrawObject helice_obj=null;
     public DrawObject terrain_obj=null;
     public HUD hud=new HUD();
     double t=0;
@@ -107,8 +109,8 @@ public class DroneWarClient extends LegacyPlatform {
             }
         }
         
-        cube_obj.material.albedo_color.r=(float) Math.sin(t);
-        draw_object(cube_obj,camera);
+        //cube_obj.material.albedo_color.r=(float) Math.sin(t);
+       // draw_object(cube_obj,camera);
         draw_object(terrain_obj,camera);
         draw_safezone(last_update.safezone);
         if(camera.target!=null) {
@@ -126,10 +128,14 @@ public class DroneWarClient extends LegacyPlatform {
         Mesh quad=create_mesh();
         quad.load(Mesh.get_quad());
         quad_obj=new DrawObject(quad);
-        Mesh sphere=load_obj("assets/sphere.obj");
+        helice_obj=new DrawObject(quad);
+        
+        helice_obj.material.albedo=load_texture("helice.png");
+        
+        Mesh sphere=load_obj("sphere.obj");
         cube_obj=new DrawObject(cube); 
-        drone_obj=new DrawObject(load_obj("assets/drone.obj")); 
-        Mesh bullet=load_obj("assets/bullet.obj");
+        drone_obj=new DrawObject(load_obj("drone.obj")); 
+        Mesh bullet=load_obj("bullet.obj");
         bullet_obj=new DrawObject(bullet); 
         safezone_obj=new DrawObject(sphere); 
         
@@ -137,7 +143,7 @@ public class DroneWarClient extends LegacyPlatform {
         Heightmap terrain=new Heightmap(128,128);
         Image terrain_image;
         try {
-            terrain_image = new JavaImageWraper(ImageIO.read(vikaTest.class.getResourceAsStream("assets/terrain_hmap.jpg")));
+            terrain_image = new JavaImageWraper(ImageIO.read(DroneWarAssets.class.getResourceAsStream("terrain_hmap.jpg")));
             
             terrain.load(terrain_image, 128, 128);
         } catch (IOException ex) {
@@ -151,17 +157,16 @@ public class DroneWarClient extends LegacyPlatform {
         terrain_obj=new DrawObject(terrain_mesh); 
         Texture terrain_texture=create_texture();
         terrain_texture.load(terrain.getHeightColoredTexture());
-        cube_obj.material.albedo=terrain_texture;
-        terrain_obj.material.albedo=load_texture("assets/terrain_texture.jpg");
+        //cube_obj.material.albedo=terrain_texture;
+        terrain_obj.material.albedo=load_texture("terrain_texture.jpg");
         
         Transform terrain_transform=new Transform();
         terrain_transform.scale=new Vec3f(1024,16,1024);
         terrain_transform.position=terrain_transform.scale.divide(2.0f).negate();
         terrain_obj.model=terrain_transform.matrix();
         
-        
         set_skybox_texture(
-                load_texture("assets/skybox.png")
+                load_texture("skybox.png")
         );
     }
     public void run()   {
@@ -212,7 +217,7 @@ public class DroneWarClient extends LegacyPlatform {
         t.position = d.position.copy();
         t.position.y += rad + (rad / 2); 
 
-        t.scale = new Vec3f(5, 1, 1);
+        t.scale = new Vec3f(5, 1, 0.1f);
 
         // Vetor da câmera para o drone (direção inversa)
         Vec3f toDrone = d.position.copy().subtract(camera.transform.position);
@@ -224,12 +229,33 @@ public class DroneWarClient extends LegacyPlatform {
 
         // Aplica a rotação em torno do eixo Y
         
+        //Transform bg_transform=t.copy();
         t.rotation.rotate((float) (angle+ Math.toRadians(90)), Vec3f.UP());
-         
+        
+        cube_obj.model = t.matrix();
+        cube_obj.material.albedo_color = Color4f.WHITE();
+        draw_object(cube_obj, camera);
+        
+        t.scale=new Vec3f(4.8f*(d.energy/100f),0.8f,0.2f);
+        cube_obj.model=t.matrix();
+        cube_obj.material.albedo_color = Color4f.RED();
+        draw_object(cube_obj, camera);
+    }
+    private void draw_helice(Drone d) {
+        float rad = d.getRadius();
+        Transform t = new Transform();
 
+        // Posiciona a barra acima do drone
+        t.position = d.position.copy();
+        t.position.y += rad + (rad / 2); 
+
+        t.scale = new Vec3f(1, 1, 1f);
+
+        //t.rotation.rotate((float) (angle+ Math.toRadians(90)), Vec3f.UP());
+        
         quad_obj.model = t.matrix();
         quad_obj.material.albedo_color = Color4f.WHITE();
-        draw_object(quad_obj, camera);
+        draw_object(cube_obj, camera); 
     }
     private void draw_drone(Drone d) {
         Transform transform=new Transform();
