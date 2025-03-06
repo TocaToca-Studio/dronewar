@@ -16,6 +16,7 @@ public class DroneCamera extends FPSCamera {
     public Drone target=null; 
     float yoffset=1;
     public boolean follow_drone=false;
+    public boolean aim_mode=false;
     public DroneCamera() {
         super();
         this.setup3D(60);
@@ -29,14 +30,21 @@ public class DroneCamera extends FPSCamera {
             super.update(platform);
             return;
         }
+        aim_mode=platform.get_input().pressing(Input.R2);
         float delta=(float) platform.get_delta();
+        
         if(target!=null) { 
-            Vec3f target_pos=target.position.copy();
-            target_pos=target_pos.add(
-             Mat4f.IDENTITY().translated(Vec3f.BACK()).rotated(target.get_rotation()).translation().mul(20)
-            );
-            target_pos.y+=yoffset ;//+ target.getRadius()
-            transform.position=Vec3f.lerp(transform.position, target_pos, delta*5); 
+            Vec3f target_pos=target.position.copy(); 
+            if(!aim_mode) {
+                target_pos=target_pos.add(
+                 Mat4f.IDENTITY().translated(Vec3f.BACK()).rotated(target.get_rotation()).translation().mul(20)
+                );
+                target_pos.y+=yoffset;//+ target.getRadius()]
+                
+                transform.position=Vec3f.lerp(transform.position, target_pos, delta*5);  
+            } else {
+                transform.position=target_pos;
+            }
             transform.rotation=target.get_rotation();
         }
         setViewMatrix(transform.viewMatrix()); 

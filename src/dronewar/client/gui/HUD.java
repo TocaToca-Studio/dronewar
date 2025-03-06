@@ -8,6 +8,7 @@ import choke3d.vika.frontend.Camera;
 import choke3d.vika.frontend.Platform;
 import choke3d.vika.frontend.Texture;
 import dronewar.assets.DroneWarAssets;
+import dronewar.client.DroneCamera;
 import dronewar.server.game.Drone;
 import dronewar.server.game.Player;
 import java.io.IOException;
@@ -25,16 +26,25 @@ public class HUD {
     private final Vec2i resolution=new Vec2i(640,480);
     private Camera camera=new Camera();  
     private Texture text=null;
+    private Texture crosshair=null;
     public void init(Platform platform) {
         camera.setupHUD(resolution.x, resolution.y); 
         camera.setViewMatrix(Mat4f.IDENTITY().translated(0, 0, -1));
         camera.clearColor=new Color4f(1,1,1,0);
-        text=platform.create_texture();
+        text=platform.create_texture(); 
+        crosshair=platform.create_texture(); 
         try {
             text.load(
                     new JavaImageWraper(
                             ImageIO.read(
                                     DroneWarAssets.class.getResourceAsStream("ascii.png")
+                            )
+                    )
+            );
+            crosshair.load(
+                    new JavaImageWraper(
+                            ImageIO.read(
+                                    DroneWarAssets.class.getResourceAsStream("crosshair.png")
                             )
                     )
             );
@@ -78,13 +88,33 @@ public class HUD {
         drawText(str,x+(off*0.75f),y+off,font_size,Color4f.BLACK()); 
         drawText(str,x,y,font_size,color);
     }
-    
-    public void draw(Platform platform,Drone drone) { 
+     public void drawCrossHair() {
+         float font_size=32;
+        Color4f color=Color4f.WHITE();
+        crosshair.bind();
+        glPushMatrix();
+        glTranslatef(resolution.x/2f, resolution.y/2f, 0);
+        GL11.glScalef(font_size, font_size, font_size);
+        
+        glColor4f(color.r,color.g,color.b,color.a);
+        
+        glBegin(GL_QUADS);
+                // Desenha o caractere usando as coordenadas UV e a posição dos vértices
+          glTexCoord2f(0, 0);           glVertex2f(-0.5f, -0.5f);
+          glTexCoord2f(0 + 1, 0);       glVertex2f(-0.5f + 1, -0.5f);
+          glTexCoord2f(0 + 1, 0 + 1);   glVertex2f(-0.5f + 1, -0.5f+ 1);
+          glTexCoord2f(0, 0 + 1);       glVertex2f(-0.5f, -0.5f+ 1);
+        glEnd();
+
+        glPopMatrix();
+        crosshair.unbind();
+    }
+    public void draw(Platform platform,DroneCamera drone_camera) { 
+        Drone drone=drone_camera.target;
         // limpa e configura viewport
         platform.clear_camera(camera);
         
-         
-            // Habilita texturas e configura blending para transparência
+        // Habilita texturas e configura blending para transparência
         glEnable(GL_TEXTURE_2D);
         glDisable(GL_DEPTH_TEST);
         GL11.glEnable(GL_ALPHA);
@@ -92,19 +122,24 @@ public class HUD {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Exibe texto para a posição do jogador
+        
         drawShadowedText(String.format("Position: (%.1f, %.1f, %.1f)", 
         drone.position.x, drone.position.y, drone.position.z), 10, 10, 16,Color4f.WHITE());
-
+        
+        
         // Exibe texto para a energia do jogador
         //drawBar(80, 200, 100, 10, drone.energy / 100.0f); // Barra de energia
         drawShadowedText("Energy: "+ drone.energy, 10, 10+20, 16,Color4f.WHITE());
        
         // Exibe texto para a velocidade do jogador
         drawShadowedText(String.format("Velocity: %.1f", drone.velocity.magnitude()), 10, 10+40, 16,Color4f.WHITE());
+        if(drone_camera.aim_mode)  drawCrossHair();
+
 
         // Desabilita texturas e blending
         glDisable(GL_TEXTURE_2D);
         glDisable(GL_BLEND);
+        glEnable(GL_DEPTH_TEST);
 
     }
     

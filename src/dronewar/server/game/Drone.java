@@ -33,15 +33,20 @@ public class Drone extends BinaryPackage implements Sphere {
     public float getRadius() {
         return 2.5f;//energy/50f;
     } 
-    public Vec3f getDirection() {
-        return Mat4f.IDENTITY().translated(Vec3f.FORWARD())
+    public Vec3f getDirection(Vec3f dir) {
+        return Mat4f.IDENTITY().translated(dir)
                         .rotated(get_rotation()).translation().normalized();
+    }
+    public Vec3f getDirection() {
+        return getDirection(Vec3f.FORWARD());
     }
    
     void update(double delta) {
         if(fire_timeout>0) fire_timeout-=delta;       
         position=position.add(
-            getDirection().mul(velocity.z*(float) delta)
+            getDirection(Vec3f.FORWARD()).mul(velocity.z*(float) delta)
+        ).add( 
+            getDirection(Vec3f.UP()).mul(velocity.y*(float) delta)
         );
     }
     public Color4f get_color() { 

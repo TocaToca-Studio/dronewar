@@ -93,7 +93,8 @@ public class LegacyPlatform extends Platform {
         glFogi(GL_FOG_MODE, GL_LINEAR); // Tipos disponíveis: GL_EXP, GL_EXP2, GL_LINEAR
 
         // Cor da neblina
-        float[] fogColor = {0.45f, 0.38f, 0.62f, 1.0f}; // Cinza claro
+        //float[] fogColor = {0.45f, 0.38f, 0.62f, 1.0f}; // Cinza claro
+         float[] fogColor = {0.5f, 0.5f, 0.8f, 1.0f}; // Cinza claro
         glFog(GL_FOG_COLOR, BufferUtils.createFloatBuffer(4).put(fogColor).flip());
 
         // Configurações de densidade e distância do fog

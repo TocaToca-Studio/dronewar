@@ -78,7 +78,9 @@ public class Room {
                 //drone.angle+=(delta*-control.movement.x);
                 drone.angular_velocity=MathUtils.LERP(drone.angular_velocity,control.movement.x*Drone.MAX_ANG_VELOCITY, (float) (delta*2));
                 
-                drone.velocity.z=MathUtils.LERP(drone.velocity.z,control.movement.y*Drone.MAX_VELOCITY, (float) (delta*0.5f));
+                drone.velocity.z=MathUtils.LERP(drone.velocity.z,control.movement.z*Drone.MAX_VELOCITY, (float) (delta*0.5f));
+                drone.velocity.y=MathUtils.LERP(drone.velocity.y,control.movement.y*Drone.MAX_VELOCITY, (float) (delta*0.5f));
+               
                 //drone.velocity.
                 drone.angle+=(-delta*drone.angular_velocity); 
               

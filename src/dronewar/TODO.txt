@@ -12,10 +12,13 @@
 
 
 ------ gameplay ------
-  
-- inventar um sistema melhor de mira e tiro
+   
 - tiros devem ir reto, porem se chegar alguma nave muito perto ele deve perseguir a nave
-- ajustar velocidade do tiro e da nave em um ponto que, a nave consiga desviar do tiro se agir rapido, mas se nao agir rapido a bala vai perseguir ele ate acerta. então é uma velocidade relativamente proxima a da nave.
+- ajustar velocidade do tiro e da nave em um ponto que, a nave consiga desviar do tiro se agir rapido, 
+mas se nao agir rapido a bala vai perseguir ele ate acertar. 
+então é uma velocidade relativamente proxima a da nave.
+
+- ajustar controles no teclado e no joystick
 - desenhar outra nave, com mais detalhes.
 - desenhar outra munição, com mais detalhes.
 

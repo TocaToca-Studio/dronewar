@@ -1,10 +1,8 @@
 package dronewar.client;
  
-import choke3d.math.Mat4f;
 import choke3d.math.Transform;
 import choke3d.math.Vec2i; 
 import choke3d.math.Vec3f;
-import choke3d.FPSCamera;
 import choke3d.math.Color4f;
 import choke3d.math.Quat;
 import choke3d.math.Vec2f;
@@ -86,15 +84,22 @@ public class DroneWarClient extends LegacyPlatform {
     public HUD hud=new HUD();
     double t=0;
     @Override
-    public void update() {
-        
+    public void update() { 
         t+=get_delta();
         super.update(); 
         
         
         //Display.setTitle(player.name); 
         if(camera.follow_drone) {
-            client_control.movement=get_input().getAxis();
+            Vec2f mov=get_input().getAxis();
+            float movy=0;
+            if(get_input().pressing(Input.CIRCLE)) {
+                movy+=1;
+            }
+            if(get_input().pressing(Input.QUAD)) {
+                movy-=1;
+            }
+            client_control.movement=new Vec3f(mov.x,movy,mov.y);
             client_control.fire=get_input().pressing(Input.CROSS);
         }
         Vec2i win_size=get_window_size();
@@ -103,13 +108,17 @@ public class DroneWarClient extends LegacyPlatform {
         
         //cube_obj.material.albedo_color.r=(float) Math.sin(t);
        // draw_object(cube_obj,camera);
-        draw_object(terrain_obj,camera);
+        //draw_object(terrain_obj,camera);
         draw_safezone(last_update.safezone);
         
          synchronized(last_update.drones) {
             for(Drone d : last_update.drones) {
                 if(d.player==player.id) {  
                    camera.target=d; 
+                   if(camera.aim_mode) {
+                       // nao renderiza o proprio drone caso estiver no modo de mira
+                       continue;
+                   };
                 }
                 draw_drone(d);
             }
@@ -129,7 +138,7 @@ public class DroneWarClient extends LegacyPlatform {
             }
         }
         if(camera.target!=null) {
-            hud.draw(this, camera.target);
+            hud.draw(this, camera);
         }
         
     } 
@@ -182,7 +191,7 @@ public class DroneWarClient extends LegacyPlatform {
         terrain_obj.model=terrain_transform.matrix();
         
         set_skybox_texture(
-                load_texture("skybox.png")
+                load_texture("skybox2.png")
         );
     }
     public void run()   {
@@ -195,9 +204,11 @@ public class DroneWarClient extends LegacyPlatform {
         packetHandler.socket.close();
         System.exit(0);
     }
+    /*
     public static void main(String[] args) {
         (new DroneWarClient()).run();
     }
+    */
     
     
     

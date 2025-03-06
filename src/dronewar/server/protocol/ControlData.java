@@ -10,11 +10,11 @@ import choke3d.network.BinaryPackage;
  * @author tocatoca
  */ 
 public class ControlData extends BinaryPackage { 
-    public Vec2f movement=new Vec2f();
+    public Vec3f movement=new Vec3f();
     public boolean fire=false;
     public ControlData() {
         super();
-        putField("movement", "vec2f"); 
+        putField("movement", "vec3f"); 
         putField("fire", "boolean"); 
     } 
     @Override
@@ -24,7 +24,7 @@ public class ControlData extends BinaryPackage {
     }
     @Override
     public void unserialize() {
-        movement=getVec2f("movement");
+        movement=getVec3f("movement");
         fire=getBool("fire");
     }
 }
